@@ -8,3 +8,5 @@ Release/
 
 # ImGui
 imgui.ini
+
+build/

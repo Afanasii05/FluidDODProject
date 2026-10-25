@@ -10,7 +10,7 @@ int main()
     glfwInit();
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* screen = glfwGetVideoMode(monitor);
-    GLFWwindow* window = glfwCreateWindow(screen->width, screen->height, "Fluid", monitor, nullptr);
+    GLFWwindow* window = glfwCreateWindow(screen->width / 2.0f, screen->height / 2.0f, "Fluid", nullptr, nullptr);
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // vsync
 
@@ -19,7 +19,7 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
 
-    Circle circle({ screen->width / 2.0f, screen->height / 2.0f }, 50.0f);
+    Circle circle({ screen->width / 4.0f, screen->height / 4.0f }, 50.0f);
 
     // Game loop
     while (!glfwWindowShouldClose(window))

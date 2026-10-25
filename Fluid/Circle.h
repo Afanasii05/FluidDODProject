@@ -16,7 +16,7 @@ public:
             if (movDist <= 0.0f) {
                 pos = endPos; movDist = 0; movVec = { 0, 0 }; speed = 0; moving = false;
             } else {
-                float frict = Funcs::normalized_movement_mult(movDist, totalDist, 0.01f);
+                float frict = Funcs::normalized_movement_mult(movDist, totalDist, 0.05f);
                 float delta_spd = ImGui::GetIO().DeltaTime * speed * frict;
                 pos += movVec * delta_spd; movDist -= delta_spd;
             }

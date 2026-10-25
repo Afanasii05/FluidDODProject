@@ -11,8 +11,8 @@
 class Object {
 protected:
     ImVec2 movVec; ImVec2 endPos; float movDist; float totalDist; float speed;
-    bool moving = false;
 public:
+    bool moving = false;
     ImVec2 pos; ImU32 color;
 
     Object(ImVec2 pos, ImU32 color = IM_COL32(80, 160, 255, 255))

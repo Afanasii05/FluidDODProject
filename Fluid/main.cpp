@@ -42,6 +42,8 @@ int main() {
 
         ImGui::Begin("Control Panel");
         ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+        ImGui::Separator();
+        ImGui::Text("Moving: %b", circle.moving);
         ImGui::End();
 
         // update moving position on left click
@@ -58,11 +60,6 @@ int main() {
             }
         }
         circle.Update();
-
-        // if (circle.pos.x >= screen_size.x) { mult = -1.0f; }
-        // if (circle.pos.x <= 0.0f) { mult = 1.0f; }
-        // circle.pos.x += 5.0f * mult * Funcs::normalized_movement_mult(circle.pos, screen_size / 2.0f, 0.25f, false);
-        // circle.Draw();
 
         ImGui::Render();
         glClear(GL_COLOR_BUFFER_BIT);

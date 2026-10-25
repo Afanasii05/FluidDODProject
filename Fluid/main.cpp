@@ -4,31 +4,30 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
+
+#include <cmath>
 #include "Circle.h"
-#include "Funcs.h"
 
-
-int main()
-{
-
+int main() {
     // Fereastra fullscreen
     glfwInit();
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* screen = glfwGetVideoMode(monitor);
     ImVec2 screen_size((float)screen->width / 2.0f, (float)screen->height / 2.0f);
 
-    GLFWwindow* window = glfwCreateWindow(screen_size.x, screen_size.y, "Fluid", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(screen_size.x, screen_size.y, "Fluid_test", nullptr, nullptr);
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // vsync
+    //glfwSwapInterval(1); // vsync
+
 
     // ImGui
     ImGui::CreateContext();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
 
+    // variable definitions
     Circle circle({ screen_size.x / 2.0f, screen_size.y / 2.0f }, 50.0f);
-
-    float mult = 1.0f;
+    float mult = 1.0f; double end_x, end_y;
 
     // Game loop
     while (!glfwWindowShouldClose(window))
@@ -41,11 +40,29 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // update:
-        if (circle.position.x >= screen_size.x) { mult = -1.0f; }
-        if (circle.position.x <= 0.0f) { mult = 1.0f; }
-        circle.position.x += 5.0f * mult * Funcs::normalize_movement_mult(circle.position, screen_size / 2.0f, 0.25f, false);
-        circle.Draw();
+        ImGui::Begin("Control Panel");
+        ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+        ImGui::End();
+
+        // update moving position on left click
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+            glfwGetCursorPos(window, &end_x, &end_y);
+
+            // determine distance between click and circle and where and how it should go
+            ImVec2 dir((float)end_x - circle.pos.x, (float)end_y - circle.pos.y);
+            float dist = std::sqrt(dir.x * dir.x + dir.y * dir.y);
+
+            if (dist > 0.001f) {
+                float norm_x = dir.x / dist, norm_y = dir.y / dist, base_spd = 350.0f * dist / 100.0f;
+                circle.moveTo({ (float)end_x, (float)end_y }, { norm_x, norm_y }, dist, base_spd);
+            }
+        }
+        circle.Update();
+
+        // if (circle.pos.x >= screen_size.x) { mult = -1.0f; }
+        // if (circle.pos.x <= 0.0f) { mult = 1.0f; }
+        // circle.pos.x += 5.0f * mult * Funcs::normalized_movement_mult(circle.pos, screen_size / 2.0f, 0.25f, false);
+        // circle.Draw();
 
         ImGui::Render();
         glClear(GL_COLOR_BUFFER_BIT);

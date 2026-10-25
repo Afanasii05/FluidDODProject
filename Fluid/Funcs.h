@@ -19,12 +19,15 @@ public:
      * @param end_pos end point that the object is sliding towards.
      * @param frict_fail the 0.0 - 1.0 percentage of how much speed should be kept
      *                      when reaching the end point (e.g., 0.1 = 10% of speed is kept);
-     * @param vert specifies if it calculates y (true) or x (false) movement
      * @return float The normalized multiplier to apply to the movement vector.
      */
-    static float normalize_movement_mult(ImVec2 cur_pos, ImVec2 end_pos, float frict_fail = 0.1f, bool vert = false) {
-        return (!vert) ? 1.0f + frict_fail - (abs(cur_pos.x - end_pos.x) / end_pos.x) : 1.0f + frict_fail - (abs(cur_pos.y - end_pos.y) / end_pos.y);
+    static float normalized_movement_mult(float cur_dist, float total_dist, float frict_fail = 0) {
+        return std::max(cur_dist / total_dist, frict_fail);
     }
+
+    static bool is_negative(int val) { return val < 0; }
+    static bool is_negative(float val) { return val < 0; }
+    static bool is_negative(double val) { return val < 0; }
 };
 
 #endif //FLUID_FUNCS_H

@@ -20,6 +20,7 @@ set(SOURCES
     vendor/imgui/imgui_widgets.cpp
     vendor/imgui/backends/imgui_impl_glfw.cpp
     vendor/imgui/backends/imgui_impl_opengl3.cpp
+    Fluid/Funcs.h
 )
 
 add_executable(Fluid ${SOURCES})

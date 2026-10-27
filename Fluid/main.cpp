@@ -4,6 +4,10 @@
 #include <GLFW/glfw3.h>
 #include "Circle.h"
 #include "Physics.h"
+#include "ourMath.h"
+#include "globalVariables.h"
+#include "movableShape.h"
+
 int main()
 {
     // Fereastra fullscreen
@@ -11,8 +15,10 @@ int main()
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* screen = glfwGetVideoMode(monitor);
     GLFWwindow* window = glfwCreateWindow(screen->width, screen->height, "Fluid", monitor, nullptr);
+    globalVariables::screenHeight = screen->height;
+    globalVariables::screenWidth = screen->width;
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(0); // vsync
+    glfwSwapInterval(1); // vsync
 
     // ImGui
     ImGui::CreateContext();
@@ -30,13 +36,12 @@ int main()
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
         ImGui::Begin("Generare cercuri");
-        ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+        ImGui::Text("fps:%.1f", ImGui::GetIO().Framerate);
         if (ImGui::SliderInt("Nr de cercuri", &nrDeCercuri, 0, 100000))
             meneger.changeNumberOfCircles(nrDeCercuri);
         ImGui::End();
-
+        
 
         meneger.update();
 

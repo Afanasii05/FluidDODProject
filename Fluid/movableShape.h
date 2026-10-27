@@ -8,7 +8,7 @@ class movableShape : public Drawable
 	Vector2f acceleration;
 	Vector2f position;
 	Vector2f speed;
-	float maxSpeed=1.0f;
+	float maxSpeed = 1.0f;
 
 	public:
 	movableShape(Vector2f position, Vector2f acceleration = Vector2f()) {
@@ -34,6 +34,8 @@ class movableShape : public Drawable
 		if(speed.magnitude()<=maxSpeed)
 			speed = speed + acceleration;
 	}
+	Vector2f getAcceleration() { return acceleration; }
 	Vector2f getSpeed() { return speed; }
-
+	Vector2f getPosition() { return position; }
 };
+

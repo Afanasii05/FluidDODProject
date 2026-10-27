@@ -12,16 +12,15 @@ int main()
     const GLFWvidmode* screen = glfwGetVideoMode(monitor);
     GLFWwindow* window = glfwCreateWindow(screen->width, screen->height, "Fluid", monitor, nullptr);
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // vsync
+    glfwSwapInterval(0); // vsync
 
     // ImGui
     ImGui::CreateContext();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
     Physics meneger;
-    Circle circle({ screen->width / 2.0f, screen->height / 2.0f }, {0.01,-0.02}, 50.0f);
-    meneger.addCircle(circle);
     // Game loop
+    int nrDeCercuri=0;
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -32,8 +31,14 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        ImGui::Begin("Generare cercuri");
+        ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+        if (ImGui::SliderInt("Nr de cercuri", &nrDeCercuri, 0, 100000))
+            meneger.changeNumberOfCircles(nrDeCercuri);
+        ImGui::End();
+
+
         meneger.update();
-        circle.render();
 
         ImGui::Render();
         glClear(GL_COLOR_BUFFER_BIT);

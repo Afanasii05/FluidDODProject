@@ -1,5 +1,6 @@
 #pragma once
 #include "imgui.h"
+#include <cmath>
 namespace ourMath
 {
 	struct Vector2f {
@@ -18,6 +19,9 @@ namespace ourMath
 			return *this;
 		}
 		operator ImVec2() const { return ImVec2(x, y); }
+	float magnitude() {
+	return sqrt(x * x + y * y);
+}
 	};
 	
 

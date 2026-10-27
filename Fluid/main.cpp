@@ -3,7 +3,7 @@
 #include "imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
 #include "Circle.h"
-
+#include "Physics.h"
 int main()
 {
     // Fereastra fullscreen
@@ -18,9 +18,9 @@ int main()
     ImGui::CreateContext();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
-
-    Circle circle({ screen->width / 2.0f, screen->height / 2.0f }, 50.0f);
-
+    Physics meneger;
+    Circle circle({ screen->width / 2.0f, screen->height / 2.0f }, {0.01,-0.02}, 50.0f);
+    meneger.addCircle(circle);
     // Game loop
     while (!glfwWindowShouldClose(window))
     {
@@ -32,6 +32,7 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        meneger.update();
         circle.render();
 
         ImGui::Render();

@@ -9,4 +9,5 @@ Release/
 # ImGui
 imgui.ini
 
+#BuildFile pe Linux
 build/

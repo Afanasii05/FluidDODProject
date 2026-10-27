@@ -8,8 +8,8 @@ public:
     float  radius;
     ImU32  color;
 
-    Circle(ourMath::Vector2f position, float radius, ImU32 color = IM_COL32(80, 160, 255, 255))
-        : movableShape(position), radius(radius), color(color) { }
+    Circle(ourMath::Vector2f position, ourMath::Vector2f acceleration ,  float radius, ImU32 color = IM_COL32(80, 160, 255, 255))
+        : movableShape(position, acceleration), radius(radius), color(color) { }
 
     void render()  const override 
     {

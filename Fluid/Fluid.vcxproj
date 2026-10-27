@@ -35,7 +35,6 @@
   <PropertyGroup Label="UserMacros">
     <Vendor>$(ProjectDir)..\vendor\</Vendor>
   </PropertyGroup>
-
   <!-- Comun pentru Debug si Release -->
   <ItemDefinitionGroup>
     <ClCompile>
@@ -71,8 +70,8 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-
   <ItemGroup>
+    <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="..\vendor\imgui\imgui.cpp" />
     <ClCompile Include="..\vendor\imgui\imgui_demo.cpp" />
@@ -81,9 +80,14 @@
     <ClCompile Include="..\vendor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\vendor\imgui\backends\imgui_impl_glfw.cpp" />
     <ClCompile Include="..\vendor\imgui\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="movableShape.cpp" />
+    <ClCompile Include="ourMath.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circle.h" />
+    <ClInclude Include="Drawable.h" />
+    <ClInclude Include="movableShape.h" />
+    <ClInclude Include="ourMath.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

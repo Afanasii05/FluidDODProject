@@ -32,8 +32,7 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // update:  circle.position.x += 1.0f;
-        circle.Draw();
+        circle.render();
 
         ImGui::Render();
         glClear(GL_COLOR_BUFFER_BIT);

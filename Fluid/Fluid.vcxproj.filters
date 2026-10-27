@@ -7,15 +7,35 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="..\vendor\imgui\imgui.cpp"><Filter>vendor</Filter></ClCompile>
-    <ClCompile Include="..\vendor\imgui\imgui_demo.cpp"><Filter>vendor</Filter></ClCompile>
-    <ClCompile Include="..\vendor\imgui\imgui_draw.cpp"><Filter>vendor</Filter></ClCompile>
-    <ClCompile Include="..\vendor\imgui\imgui_tables.cpp"><Filter>vendor</Filter></ClCompile>
-    <ClCompile Include="..\vendor\imgui\imgui_widgets.cpp"><Filter>vendor</Filter></ClCompile>
-    <ClCompile Include="..\vendor\imgui\backends\imgui_impl_glfw.cpp"><Filter>vendor</Filter></ClCompile>
-    <ClCompile Include="..\vendor\imgui\backends\imgui_impl_opengl3.cpp"><Filter>vendor</Filter></ClCompile>
+    <ClCompile Include="..\vendor\imgui\imgui.cpp">
+      <Filter>vendor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\imgui\imgui_demo.cpp">
+      <Filter>vendor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\imgui\imgui_draw.cpp">
+      <Filter>vendor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\imgui\imgui_tables.cpp">
+      <Filter>vendor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\imgui\imgui_widgets.cpp">
+      <Filter>vendor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\imgui\backends\imgui_impl_glfw.cpp">
+      <Filter>vendor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\imgui\backends\imgui_impl_opengl3.cpp">
+      <Filter>vendor</Filter>
+    </ClCompile>
+    <ClCompile Include="Drawable.cpp" />
+    <ClCompile Include="movableShape.cpp" />
+    <ClCompile Include="ourMath.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circle.h" />
+    <ClInclude Include="Drawable.h" />
+    <ClInclude Include="movableShape.h" />
+    <ClInclude Include="ourMath.h" />
   </ItemGroup>
 </Project>

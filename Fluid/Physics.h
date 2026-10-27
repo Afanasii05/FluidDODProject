@@ -1,7 +1,8 @@
-#pragma once
+﻿#pragma once
 #include "Circle.h"
 #include "vector"
 #include <random>
+#include <algorithm>
 #include "globalVariables.h"
 class Physics
 {

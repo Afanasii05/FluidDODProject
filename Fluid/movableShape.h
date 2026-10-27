@@ -7,11 +7,13 @@ class movableShape : public Drawable
 	protected:
 	Vector2f acceleration;
 	Vector2f position;
-	float speed;
+	Vector2f speed;
+	float maxSpeed = 1.0f;
 
 	public:
-	movableShape(Vector2f position) {
+	movableShape(Vector2f position, Vector2f acceleration = Vector2f()) {
 		this->position = position;
+		this->acceleration = acceleration;
 	}
 	virtual void updateAcceleration(Vector2f addedAcceleration) {
 		acceleration = acceleration + addedAcceleration;
@@ -25,6 +27,15 @@ class movableShape : public Drawable
 	virtual void setPosition(Vector2f position) {
 		this->position = position;
 	}
-
+	virtual void setSpeed(Vector2f speed) {
+		this->speed = speed;
+	}
+	virtual void updateSpeed() {
+		if(speed.magnitude()<=maxSpeed)
+			speed = speed + acceleration;
+	}
+	Vector2f getAcceleration() { return acceleration; }
+	Vector2f getSpeed() { return speed; }
+	Vector2f getPosition() { return position; }
 };
 

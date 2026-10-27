@@ -72,6 +72,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Drawable.cpp" />
+    <ClCompile Include="globalVariables.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="..\vendor\imgui\imgui.cpp" />
     <ClCompile Include="..\vendor\imgui\imgui_demo.cpp" />
@@ -82,12 +83,15 @@
     <ClCompile Include="..\vendor\imgui\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="movableShape.cpp" />
     <ClCompile Include="ourMath.cpp" />
+    <ClCompile Include="Physics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circle.h" />
     <ClInclude Include="Drawable.h" />
+    <ClInclude Include="globalVariables.h" />
     <ClInclude Include="movableShape.h" />
     <ClInclude Include="ourMath.h" />
+    <ClInclude Include="Physics.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

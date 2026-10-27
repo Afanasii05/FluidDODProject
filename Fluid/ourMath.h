@@ -1,7 +1,7 @@
 #pragma once
 #include "imgui.h"
-#include <random>
 #include <cmath>
+#include <random>
 namespace ourMath
 {
 	struct Vector2f {
@@ -19,10 +19,18 @@ namespace ourMath
 			this->y = other.y;
 			return *this;
 		}
+		Vector2f operator*(float scalar) const {
+			return Vector2f(x * scalar, y * scalar);
+
+		}
+		Vector2f operator*(const Vector2f& other) {
+			return Vector2f(x * other.x, y * other.y);
+		}
 		operator ImVec2() const { return ImVec2(x, y); }
 		float magnitude() {
 			return sqrt(x * x + y * y);
 		}
+		
 	};
 
 	inline std::mt19937& rng() {
@@ -39,7 +47,6 @@ namespace ourMath
 		std::uniform_int_distribution<int> dist(min, max);
 		return dist(rng());
 	}
-
 
 
 };

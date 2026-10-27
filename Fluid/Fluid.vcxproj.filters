@@ -31,11 +31,15 @@
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="movableShape.cpp" />
     <ClCompile Include="ourMath.cpp" />
+    <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="globalVariables.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circle.h" />
     <ClInclude Include="Drawable.h" />
     <ClInclude Include="movableShape.h" />
     <ClInclude Include="ourMath.h" />
+    <ClInclude Include="Physics.h" />
+    <ClInclude Include="globalVariables.h" />
   </ItemGroup>
 </Project>

@@ -8,13 +8,13 @@ class Physics
 {
 	std::vector<std::vector<movableShape*>> grid;
 	std::vector<movableShape*> shapes;
-	float width, height;
 	float cellSize;
 	int cols, rows;
 	int squaredAddedCirclesRadius;
 
 public:
 	Physics() {
+		//setez ca marimea unui grid sa fie cat diametrul unei bile(bilele trebuie sa aibe toate aceeasi marime)
 		cellSize =  2* globalVariables::circleRadius;
 		rows = globalVariables::screenHeight /cellSize + 1;
 		cols = globalVariables::screenWidth /cellSize + 1;
@@ -35,75 +35,79 @@ public:
 			grid[cellIndex(shape->getPosition())].push_back(shape);
 		}
 	}
+
+	void checkBetweenCells(std::vector<movableShape*>& cell, int x, int y) {
+		if (x < 0 || x >= cols || y >= rows)
+			return;
+		std::vector<movableShape*>& neighbor = grid[x + cols * y];
+		for (movableShape* a : cell)
+			for (movableShape* b : neighbor)
+				resolveColision(*a, *b);
+	}
+
 	void updateCollidedCircles() {
-		const int dx[4] = { 1, -1, 0, 1 };
-		const int dy[4] = { 0,  1, 1, 1 };
-
-		for (int x = 0; x < cols; x++) {
-			for (int y = 0; y < rows; y++) {
+		for (int y = 0; y < rows; y++) {
+			for (int x = 0; x < cols; x++) {
 				std::vector<movableShape*>& cell = grid[x + cols * y];
-
-				for (int k = 0; k < (int)cell.size(); k++) {
-					for (int w = k + 1; w < (int)cell.size(); w++) {
+				if (cell.empty()) continue;
+				for (int k = 0; k < (int)cell.size(); k++)
+					for (int w = k + 1; w < (int)cell.size(); w++)
 						resolveColision(*cell[k], *cell[w]);
-					}
-				}
-
-				for (int d = 0; d < 4; d++) {
-					int nx = x + dx[d];
-					int ny = y + dy[d];
-					if (nx < 0 || nx >= cols || ny >= rows)
-						continue;                          
-
-					std::vector<movableShape*>& neighbor = grid[nx + cols * ny];
-					for (int k = 0; k < (int)cell.size(); k++) {
-						for (int w = 0; w < (int)neighbor.size(); w++) {
-							resolveColision(*cell[k], *neighbor[w]);
-						}
-					}
-				}
+				//din cauza ca deja verific 4 vecini,  nu ii iau si pe cei de sus
+				checkBetweenCells(cell, x+1, y);
+				checkBetweenCells(cell, x-1, y +1);
+				checkBetweenCells(cell, x, y +1);
+				checkBetweenCells(cell, x +1, y +1);
 			}
 		}
 	}
 	void resolveColision(movableShape& s1, movableShape& s2) {
+		//Verific initial daca colizioneaza
 		Vector2f p1 = s1.getPosition();
 		Vector2f p2 = s2.getPosition();
 
-		float dx = p2.x - p1.x;
-		float dy = p2.y - p1.y;
-		float dist2 = dx * dx + dy * dy;
+		float dirX = p2.x - p1.x;
+		float dirY = p2.y - p1.y;
+		float dist2 = dirX * dirX + dirY * dirY;
 		float minDist = 2.0f * globalVariables::circleRadius;  
 
 		if (dist2 >= minDist * minDist)
-			return;                                   
+			return;       
+
+		//Daca colizionez, cat le mut ca sa nu mai colizioneze
 		float dist = std::sqrt(dist2);
-		float nx = 1.0f, ny = 0.0f;                    
+		float nx = 1.0f, ny = 0.0f;   
 		if (dist > 0.0001f) {
-			nx = dx / dist;
-			ny = dy / dist;
+			//calculez normala directiei ca sa stiu in ce directie scot bilele 
+			nx = dirX / dist;
+			ny = dirY / dist;
 		}
-
+		//le pozitionez pe media overlapului ca sa nu mai fie una in alta.
 		float overlap = minDist - dist;
-		s1.setPosition(Vector2f(p1.x - nx * overlap * 0.5f, p1.y - ny * overlap * 0.5f));
-		s2.setPosition(Vector2f(p2.x + nx * overlap * 0.5f, p2.y + ny * overlap * 0.5f));
+		s1.setPosition(Vector2f(p1.x - nx * overlap /2.0f, p1.y - ny * overlap /2.0f));
+		s2.setPosition(Vector2f(p2.x + nx * overlap /2.0f, p2.y + ny * overlap /2.0f));
 
+		//cat modific viteza dupa ciocnire in functie de normala ciocnirii.
 		Vector2f v1 = s1.getSpeed();
 		Vector2f v2 = s2.getSpeed();
+		//puterea de apropiere una spre alta
 		float relVel = (v2.x - v1.x) * nx + (v2.y - v1.y) * ny;
 		if (relVel > 0)
 			return;                                   
 
-		float restitution = 0.9f;                      
-		float j = -(1.0f + restitution) * relVel / 2.0f;   
-		s1.setSpeed(Vector2f(v1.x - j * nx, v1.y - j * ny));
-		s2.setSpeed(Vector2f(v2.x + j * nx, v2.y + j * ny));
+		//o valoare de elasticitate pentru o coliziune care pierde putin din energie
+		float elastic = 0.99f;                      
+		float power = -(1.0f + elastic) * relVel / 2.0f;   
+		//aplic impulsul in sensul opus
+		s1.setSpeed(Vector2f(v1.x - power * nx, v1.y - power * ny));
+		s2.setSpeed(Vector2f(v2.x + power * nx, v2.y + power * ny));
 
 	}
 	void addCircles(std::vector<movableShape*> addedShapes) {
 		shapes.insert(shapes.end(), addedShapes.begin(), addedShapes.end());
 	}
-	void addCircle(Circle& cerc) {
-		shapes.push_back(&cerc);
+	void addCircle(Circle* cerc) {
+		shapes.push_back(cerc);
 	}
 	
 
@@ -114,13 +118,10 @@ public:
 		for (movableShape* shape : shapes) {
 			if (shape->getPosition().x - globalVariables::circleRadius <= 0 || shape->getPosition().x + globalVariables::circleRadius >= globalVariables::screenWidth) {
 				shape->setSpeed(shape->getSpeed() * Vector2f(-1, 1));
-				shape->setAcceleration(shape->getAcceleration() * Vector2f(-1, 1));
 			}
 			if (shape->getPosition().y - globalVariables::circleRadius <= 0 || shape->getPosition().y + globalVariables::circleRadius >= globalVariables::screenHeight) {
 				shape->setSpeed(shape->getSpeed() * Vector2f(1, -1));
-				shape->setAcceleration(shape->getAcceleration() * Vector2f(1, -1));
 			}
-			shape->updateSpeed();
 			shape->updatePosition(shape->getSpeed());
 			shape->render();
 		}
@@ -128,8 +129,9 @@ public:
 	void changeNumberOfCircles(int number) {
 		if (number > shapes.size()) {
 			for (int i = 0;i < number - shapes.size();i++) {
-				Circle* c = new Circle({ ourMath::randomFloat(200,1700), ourMath::randomFloat(200,800) }, { ourMath::randomFloat(-1,1) ,ourMath::randomFloat(-1,1) }, globalVariables::circleRadius);
-				addCircle(*c);
+				Circle* c = new Circle({ ourMath::randomFloat(200,1700), ourMath::randomFloat(200,800) }, {0,0}, globalVariables::circleRadius);
+				c->setSpeed({ ourMath::randomFloat(-3, 3), ourMath::randomFloat(-3, 3) });
+				addCircle(c);
 			}
 		}
 		else {
@@ -139,6 +141,9 @@ public:
 			}
 		}
 	}
-	
+	~Physics() {
+		for (movableShape* shape : shapes)
+			delete shape;
+	}
 };
 

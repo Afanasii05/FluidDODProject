@@ -33,6 +33,7 @@
     <ClCompile Include="ourMath.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="globalVariables.cpp" />
+    <ClCompile Include="PhysicsDod.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circle.h" />
@@ -41,5 +42,6 @@
     <ClInclude Include="ourMath.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="globalVariables.h" />
+    <ClInclude Include="PhysicsDod.h" />
   </ItemGroup>
 </Project>

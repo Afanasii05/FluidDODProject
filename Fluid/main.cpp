@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include "Circle.h"
 #include "Physics.h"
+#include "PhysicsDod.h"
 #include "ourMath.h"
 #include "globalVariables.h"
 #include "movableShape.h"
@@ -18,13 +19,15 @@ int main()
     globalVariables::screenHeight = screen->height;
     globalVariables::screenWidth = screen->width;
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // vsync
+    glfwSwapInterval(0); // vsync
 
     // ImGui
     ImGui::CreateContext();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
-    Physics meneger;
+
+    //Physics meneger;
+    PhysicsDod meneger;
     // Game loop
     int nrDeCercuri=0;
     while (!glfwWindowShouldClose(window))
@@ -38,7 +41,7 @@ int main()
         ImGui::NewFrame();
         ImGui::Begin("Generare cercuri");
         ImGui::Text("fps:%.1f", ImGui::GetIO().Framerate);
-        if (ImGui::SliderInt("Nr de cercuri", &nrDeCercuri, 0, 100000))
+        if (ImGui::SliderInt("Nr de cercuri", &nrDeCercuri, 0, 200000))
             meneger.changeNumberOfCircles(nrDeCercuri);
         ImGui::End();
         

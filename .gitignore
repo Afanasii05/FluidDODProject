@@ -11,3 +11,5 @@ imgui.ini
 
 #BuildFile pe Linux
 build/
+
+.idea

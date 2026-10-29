@@ -10,8 +10,8 @@ include_directories(
     Fluid
     vendor/imgui
     vendor/imgui/backends
-    vendor/sys_info/core/include/
     vendor/glad/include
+    vendor/sys_info/core/include/
     vendor/glm
 )
 
@@ -37,3 +37,7 @@ find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 
 target_link_libraries(Fluid PRIVATE glfw OpenGL::GL dl pthread sys_core)
+
+# get shaders so opengl runs
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Fluid/shader.vs DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Fluid/shader.fs DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

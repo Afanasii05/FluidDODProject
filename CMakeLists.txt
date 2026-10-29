@@ -3,14 +3,17 @@ project(Fluid)
 
 set(CMAKE_CXX_STANDARD 17)
 
-# Include directoarele pentru ImGui și headerele
+add_subdirectory(vendor/sys_info)
+
+# ImGui directories
 include_directories(
     Fluid
     vendor/imgui
     vendor/imgui/backends
+    vendor/sys_info/core/include/
 )
 
-# Fisierele sursa
+# Source files
 set(SOURCES
     Fluid/main.cpp
     vendor/imgui/imgui.cpp
@@ -20,12 +23,13 @@ set(SOURCES
     vendor/imgui/imgui_widgets.cpp
     vendor/imgui/backends/imgui_impl_glfw.cpp
     vendor/imgui/backends/imgui_impl_opengl3.cpp
+    Fluid/SystemInfo.h
 )
 
 add_executable(Fluid ${SOURCES})
 
-# Bibliotecile OpenGL si glfw3
+# Packages
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 
-target_link_libraries(Fluid PRIVATE glfw OpenGL::GL dl pthread)
+target_link_libraries(Fluid PRIVATE glfw OpenGL::GL dl pthread sys_core)

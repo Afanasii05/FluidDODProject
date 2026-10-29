@@ -42,12 +42,13 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(Vendor)imgui;$(Vendor)imgui\backends;$(Vendor)glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(Vendor)imgui;$(Vendor)imgui\backends;$(Vendor)glfw\include;$(Vendor)sys_info\core\include;$(Vendor)glad\include;$(Vendor)glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(Vendor)glfw\lib\glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(Vendor)glfw\lib\glfw3.lib;opengl32.lib;psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -85,6 +86,9 @@
     <ClCompile Include="ourMath.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="PhysicsDod.cpp" />
+    <ClCompile Include="..\vendor\sys_info\core\src\ProcessInfo.cpp" />
+    <ClCompile Include="..\vendor\glad\src\glad.c" />
+    <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circle.h" />
@@ -94,6 +98,13 @@
     <ClInclude Include="ourMath.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="PhysicsDod.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="..\vendor\sys_info\core\include\ProcessInfo.h" />
+    <ClInclude Include="..\vendor\sys_info\core\include\SystemInformation.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shader.fs" />
+    <None Include="shader.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

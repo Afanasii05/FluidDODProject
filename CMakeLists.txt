@@ -11,6 +11,8 @@ include_directories(
     vendor/imgui
     vendor/imgui/backends
     vendor/sys_info/core/include/
+    vendor/glad/include
+    vendor/glm
 )
 
 # Source files
@@ -24,6 +26,8 @@ set(SOURCES
     vendor/imgui/backends/imgui_impl_glfw.cpp
     vendor/imgui/backends/imgui_impl_opengl3.cpp
     Fluid/SystemInfo.h
+    Fluid/Shader.cpp
+    vendor/glad/src/glad.c
 )
 
 add_executable(Fluid ${SOURCES})

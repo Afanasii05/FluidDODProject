@@ -1,3 +1,4 @@
+#include <glad/glad.h>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -23,17 +24,27 @@ int main()
     globalVariables::screenHeight = screen->height;
     globalVariables::screenWidth = screen->width;
     glfwMakeContextCurrent(window);
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cout << "Nu s-au putut incarca functiile OpenGL (glad)\n";
+        return -1;
+    }
     glfwSwapInterval(0); // vsync
-
+    glEnable(GL_PROGRAM_POINT_SIZE);
+    glEnable(GL_POINT_SPRITE);   
     // ImGui
     ImGui::CreateContext();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
 
+    Shader shader("shader.vs", "shader.fs");
+    shader.use();
+    shader.setFloat("raza", globalVariables::circleRadius);
+    shader.setVec2("marimeEcran", globalVariables::screenWidth, globalVariables::screenHeight);
+
     ProcessInfo proc_info;
 
-    Physics meneger;
-    //PhysicsDod meneger;
+    //Physics meneger;
+    PhysicsDod meneger;
 
     int nrDeCercuri = 0; bool show_graph_cpu = false, show_graph_ram = false;
 
@@ -132,12 +143,12 @@ int main()
             meneger.changeNumberOfCircles(nrDeCercuri);
         ImGui::End();
         
-
         meneger.update();
 
-        ImGui::Render();
-        glClear(GL_COLOR_BUFFER_BIT);
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        ImGui::Render();                     
+        glClear(GL_COLOR_BUFFER_BIT);         
+        meneger.render(shader);                
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());   
         glfwSwapBuffers(window);
     }
 

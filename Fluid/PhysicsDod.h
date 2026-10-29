@@ -1,5 +1,8 @@
-#pragma once
+﻿#pragma once
+#include "Shader.h"
 #include <vector>
+#include <algorithm>
+#include <cmath>
 #include "ourMath.h"
 #include "Circle.h"
 #include "globalVariables.h"
@@ -13,6 +16,7 @@ class PhysicsDod
 	float cellSize;
 	int cols, rows;
 	int squaredAddedCirclesRadius;
+	GLuint Vao, Vbo;
 public:
 	PhysicsDod() {
 		cellSize = 2 * globalVariables::circleRadius;
@@ -20,6 +24,16 @@ public:
 		cols = globalVariables::screenWidth / cellSize + 1;
 		grid.assign(rows * cols, {});
 		squaredAddedCirclesRadius = cellSize * cellSize;
+
+		//Generare de buffere pentru rendare
+		glGenVertexArrays(1, &Vao);
+		glGenBuffers(1, &Vbo);
+		glBindVertexArray(Vao);
+		glBindBuffer(GL_ARRAY_BUFFER, Vbo);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vector2f), (void*)0);  
+		glEnableVertexAttribArray(0);
+		glBindVertexArray(0);
+		
 	}
 	int cellIndex(Vector2f position) {
 		int x = std::clamp(int(position.x / cellSize), 0, cols - 1);
@@ -118,14 +132,14 @@ public:
 				speedC[i] = speedC[i] * Vector2f(1, -1);
 			}
 			posC[i] = posC[i] + speedC[i];
-			ImGui::GetBackgroundDrawList()->AddCircleFilled(posC[i], globalVariables::circleRadius, IM_COL32(80, 160, 255, 255));
+			
 		}
 	}
 	void changeNumberOfCircles(int number) {
 		if (number > posC.size()) {
 			while (posC.size() < number) {
 				posC.push_back({ ourMath::randomFloat(200, 1700), ourMath::randomFloat(200, 800) });
-				speedC.push_back({ ourMath::randomFloat(-3, 3), ourMath::randomFloat(-3, 3) });
+				speedC.push_back({ ourMath::randomFloat(-2, 2), ourMath::randomFloat(-2, 2) });
 			}
 		}
 		else {
@@ -134,6 +148,20 @@ public:
 				speedC.pop_back();
 			}
 		}
+
+	}
+
+	void render(Shader& sh) {
+		sh.use();
+		glBindVertexArray(Vao);
+		glBindBuffer(GL_ARRAY_BUFFER, Vbo);
+		glBufferData(GL_ARRAY_BUFFER, posC.size() * sizeof(Vector2f), posC.data(), GL_STREAM_DRAW);
+		glDrawArrays(GL_POINTS, 0, (GLsizei)posC.size());                                            
+		glBindVertexArray(0);
+	}
+	~PhysicsDod() {
+		glDeleteBuffers(1, &Vbo);
+		glDeleteVertexArrays(1, &Vao);
 	}
 };
 

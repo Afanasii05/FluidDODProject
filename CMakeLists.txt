@@ -25,8 +25,7 @@ set(SOURCES
     vendor/imgui/imgui_widgets.cpp
     vendor/imgui/backends/imgui_impl_glfw.cpp
     vendor/imgui/backends/imgui_impl_opengl3.cpp
-    Fluid/SystemInfo.h
-    Fluid/Shader.cpp
+        Fluid/Shader.cpp
     vendor/glad/src/glad.c
 )
 

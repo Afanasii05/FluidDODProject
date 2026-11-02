@@ -8,7 +8,7 @@ namespace ourMath
 		float x, y;
 		Vector2f(float x, float y) { this->x = x; this->y = y; };
 		Vector2f() { x = 0;y = 0; }
-		Vector2f operator+(const Vector2f other) {
+		Vector2f operator+(const Vector2f& other) {
 			return Vector2f(x + other.x, y + other.y);
 		}
 		
@@ -23,7 +23,6 @@ namespace ourMath
 		float magnitude() {
 			return sqrt(x * x + y * y);
 		}
-		
 	};
 
 	inline std::mt19937& rng() {

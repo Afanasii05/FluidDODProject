@@ -4,15 +4,15 @@
 #include "imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
 
-#include "Physics.h"
-#include "PhysicsDod.h"
+#include "PhysicsOOP.h"
+#include "PhysicsDOD.h"
 #include "ourMath.h"
 #include "globalVariables.h"
 #include "ProcessInfo.h"
 
 #include <iostream>
 
-
+enum PhysicsType { OOP, DOD };
 
 int main()
 {
@@ -49,10 +49,9 @@ int main()
 
         ProcessInfo proc_info;
 
-        Physics meneger;
-        // PhysicsDod meneger;
-
-        int nrDeCercuri = 0; bool show_graph_cpu = false, show_graph_ram = false;
+        PhysicsOOP* manager_oop = nullptr; PhysicsDOD* manager_dod = new PhysicsDOD();
+        int nrDeCercuri = 0, cur_physics_engine = DOD; bool show_graph_cpu = false, show_graph_ram = false;
+        int last_physics_engine = cur_physics_engine;
 
         // Game loop
         while (!glfwWindowShouldClose(window))
@@ -114,35 +113,44 @@ int main()
 
             ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
 
-            ImGui::Separator();
 
-            // FILE *file = fopen("/proc/self/status", "r");
-            // char line[128];
-            //
-            // while (fgets(line, 128, file) != nullptr)
-            // {
-            //     if (strncmp(line, "VmRSS:", 6) == 0)
-            //     {
-            //         ImGui::Text("/status/ ram usage: \"%s\"", line);
-            //         break;
-            //     }
-            // }
-            // fclose(file);
+            if (ImGui::SliderInt("Nr de cercuri", &nrDeCercuri, 0, 200000)) {
+                if (cur_physics_engine == DOD) { manager_dod->changeNumberOfCircles(nrDeCercuri); }
+                else if (manager_oop != nullptr) { manager_oop->changeNumberOfCircles(nrDeCercuri); }
+            }
 
-            if (ImGui::SliderInt("Nr de cercuri", &nrDeCercuri, 0, 200000))
-                meneger.changeNumberOfCircles(nrDeCercuri);
-
-            ImGui::Separator();
             ImGui::SliderFloat("Speed multiplier", &globalVariables::speedMultiplier, 0.1f, 10.0f);
+
+            ImGui::Separator();
+
+            ImGui::Text("Select Physics type:");
+
+            ImGui::RadioButton("OOP", &cur_physics_engine, OOP);
+            ImGui::SameLine();
+            ImGui::RadioButton("DOD", &cur_physics_engine, DOD);
+
+            if (cur_physics_engine != last_physics_engine) {
+                if (cur_physics_engine == OOP) {
+                    manager_oop = new PhysicsOOP(*manager_dod);
+                    delete manager_dod; manager_dod = nullptr;
+                } else if (cur_physics_engine == DOD) {
+                    manager_dod = new PhysicsDOD(*manager_oop);
+                    delete manager_oop; manager_oop = nullptr;
+                }
+                last_physics_engine = cur_physics_engine;
+            }
+
             ImGui::End();
 
-
-
-            meneger.update();
+            if (cur_physics_engine == DOD && manager_dod != nullptr) { manager_dod->update();
+            } else if (manager_oop != nullptr) { manager_oop->update(); }
 
             ImGui::Render();
             glClear(GL_COLOR_BUFFER_BIT);
-            meneger.render(shader);
+
+            if (cur_physics_engine == DOD && manager_dod != nullptr) { manager_dod->render(shader); }
+            else if (manager_oop != nullptr) { manager_oop->render(shader); }
+
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
             glfwSwapBuffers(window);
         }

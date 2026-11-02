@@ -1,8 +1,7 @@
 #pragma once
 namespace globalVariables
 {
-	inline int circleRadius=1;
-	inline int screenWidth, screenHeight;
-	inline float speedMultiplier = 1.0f;
+	inline float circleRadius = 1.0f, speedMultiplier = 1.0f;
+	inline float screenWidth, screenHeight;
 };
 

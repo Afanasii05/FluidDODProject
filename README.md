@@ -29,3 +29,6 @@ vendor/imgui  Dear ImGui 1.93.0
 vendor/glfw   GLFW 3.5.1 (header + glfw3.lib, x64)
 ```
 Nu trebuie instalat nimic in plus — tot ce trebuie e in `vendor/`.
+
+# Documentatie
+Link catre [google docs](https://docs.google.com/document/d/1LoJfDPxOExUycgFtIii5iLki0XMfcNJmOY1L-Zj2I5Y/edit?usp=sharing)

@@ -146,7 +146,7 @@ public:
 			if (posC[i].y - globalVariables::circleRadius <= 0 || posC[i].y + globalVariables::circleRadius >= globalVariables::screenHeight) {
 				speedC[i] = speedC[i] * Vector2f(1, -1);
 			}
-			posC[i] = posC[i] + speedC[i] * ImGui::GetIO().DeltaTime;
+			posC[i] = posC[i] + speedC[i] * ImGui::GetIO().DeltaTime * globalVariables::speedMultiplier;
 			
 		}
 	}

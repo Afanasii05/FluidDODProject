@@ -49,8 +49,8 @@ int main()
 
         ProcessInfo proc_info;
 
-        // Physics meneger;
-        PhysicsDod meneger;
+        Physics meneger;
+        // PhysicsDod meneger;
 
         int nrDeCercuri = 0; bool show_graph_cpu = false, show_graph_ram = false;
 
@@ -131,7 +131,12 @@ int main()
 
             if (ImGui::SliderInt("Nr de cercuri", &nrDeCercuri, 0, 200000))
                 meneger.changeNumberOfCircles(nrDeCercuri);
+
+            ImGui::Separator();
+            ImGui::SliderFloat("Speed multiplier", &globalVariables::speedMultiplier, 0.1f, 10.0f);
             ImGui::End();
+
+
 
             meneger.update();
 

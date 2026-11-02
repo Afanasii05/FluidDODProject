@@ -158,7 +158,7 @@ public:
 			if (shape->getPosition().y - globalVariables::circleRadius <= 0 || shape->getPosition().y + globalVariables::circleRadius >= globalVariables::screenHeight) {
 				shape->setSpeed(shape->getSpeed() * Vector2f(1, -1));
 			}
-			shape->updatePosition(shape->getSpeed() * ImGui::GetIO().DeltaTime);
+			shape->updatePosition(shape->getSpeed() * ImGui::GetIO().DeltaTime * globalVariables::speedMultiplier);
 			shape->render();
 		}
 	}
@@ -166,7 +166,7 @@ public:
 		if (number > shapes.size()) {
 			for (int i = 0;i < number - shapes.size();i++) {
 				Circle* c = new Circle({ ourMath::randomFloat(200,1700), ourMath::randomFloat(200,800) }, {0,0}, globalVariables::circleRadius);
-				c->setSpeed({ ourMath::randomFloat(-3, 3), ourMath::randomFloat(-3, 3) });
+				c->setSpeed({ ourMath::randomFloat(-20, 20), ourMath::randomFloat(-20, 20) });
 				addCircle(c);
 			}
 		}

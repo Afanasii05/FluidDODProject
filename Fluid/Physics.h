@@ -1,26 +1,60 @@
 ﻿#pragma once
-#include "Circle.h"
-#include "vector"
-#include <random>
+#include "Shader.h"
+#include <vector>
 #include <algorithm>
+#include <cmath>
+#include "ourMath.h"
 #include "globalVariables.h"
+#include "Circle.h"
+#include "imgui.h"
+using namespace ourMath;
+
 class Physics
 {
 	std::vector<std::vector<movableShape*>> grid;
 	std::vector<movableShape*> shapes;
 	float cellSize;
-	int cols, rows;
-	int squaredAddedCirclesRadius;
+	int cols, rows, squaredAddedCirclesRadius;
+	GLuint Vao, Vbo;
 
 public:
-	Physics() {
-		//setez ca marimea unui grid sa fie cat diametrul unei bile(bilele trebuie sa aibe toate aceeasi marime)
-		cellSize =  2* globalVariables::circleRadius;
+	Physics() { //setez ca marimea unui grid sa fie cat diametrul unei bile(bilele trebuie sa aibe toate aceeasi marime)
+		cellSize =  2 * globalVariables::circleRadius;
 		rows = globalVariables::screenHeight /cellSize + 1;
 		cols = globalVariables::screenWidth /cellSize + 1;
 		grid.assign(rows *cols, {});
 		squaredAddedCirclesRadius = cellSize*cellSize;
+
+		//Generare de buffere pentru rendare
+		glGenVertexArrays(1, &Vao);
+		glGenBuffers(1, &Vbo);
+		glBindVertexArray(Vao);
+		glBindBuffer(GL_ARRAY_BUFFER, Vbo);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vector2f), (void*)0);
+		glEnableVertexAttribArray(0);
+		glBindVertexArray(0);
 	}
+
+	~Physics() {
+		for (movableShape* shape : shapes)
+			delete shape;
+
+		glDeleteBuffers(1, &Vbo);
+		glDeleteVertexArrays(1, &Vao);
+	}
+
+	void render(Shader& sh) {
+		std::vector<Vector2f> positions; positions.reserve(shapes.size());
+		std::transform(shapes.begin(), shapes.end(), std::back_inserter(positions), [](movableShape* shape){ return shape->getPosition();; });
+
+		sh.use();
+		glBindVertexArray(Vao);
+		glBindBuffer(GL_ARRAY_BUFFER, Vbo);
+		glBufferData(GL_ARRAY_BUFFER, shapes.size() * sizeof(Vector2f), positions.data(), GL_STREAM_DRAW);
+		glDrawArrays(GL_POINTS, 0, (GLsizei)shapes.size());
+		glBindVertexArray(0);
+	}
+
 	int cellIndex(Vector2f position) {
 		int x = std::clamp(int(position.x / cellSize), 0, cols - 1);
 		int y = std::clamp(int(position.y / cellSize), 0, rows - 1);
@@ -50,14 +84,15 @@ public:
 			for (int x = 0; x < cols; x++) {
 				std::vector<movableShape*>& cell = grid[x + cols * y];
 				if (cell.empty()) continue;
+
 				for (int k = 0; k < (int)cell.size(); k++)
 					for (int w = k + 1; w < (int)cell.size(); w++)
 						resolveColision(*cell[k], *cell[w]);
-				//din cauza ca deja verific 4 vecini,  nu ii iau si pe cei de sus
-				checkBetweenCells(cell, x+1, y);
-				checkBetweenCells(cell, x-1, y +1);
-				checkBetweenCells(cell, x, y +1);
-				checkBetweenCells(cell, x +1, y +1);
+
+				checkBetweenCells(cell, x + 1, y);
+				checkBetweenCells(cell, x - 1, y + 1);
+				checkBetweenCells(cell, x, y + 1);
+				checkBetweenCells(cell, x + 1, y + 1);
 			}
 		}
 	}
@@ -90,6 +125,7 @@ public:
 		//cat modific viteza dupa ciocnire in functie de normala ciocnirii.
 		Vector2f v1 = s1.getSpeed();
 		Vector2f v2 = s2.getSpeed();
+
 		//puterea de apropiere una spre alta
 		float relVel = (v2.x - v1.x) * nx + (v2.y - v1.y) * ny;
 		if (relVel > 0)
@@ -122,7 +158,7 @@ public:
 			if (shape->getPosition().y - globalVariables::circleRadius <= 0 || shape->getPosition().y + globalVariables::circleRadius >= globalVariables::screenHeight) {
 				shape->setSpeed(shape->getSpeed() * Vector2f(1, -1));
 			}
-			shape->updatePosition(shape->getSpeed());
+			shape->updatePosition(shape->getSpeed() * ImGui::GetIO().DeltaTime);
 			shape->render();
 		}
 	}
@@ -140,10 +176,6 @@ public:
 				shapes.pop_back();
 			}
 		}
-	}
-	~Physics() {
-		for (movableShape* shape : shapes)
-			delete shape;
 	}
 };
 

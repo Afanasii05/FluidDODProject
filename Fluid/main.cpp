@@ -20,7 +20,7 @@ int main()
     glfwInit();
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* screen = glfwGetVideoMode(monitor);
-    GLFWwindow* window = glfwCreateWindow(screen->width, screen->height, "Fluid", monitor, nullptr);
+    GLFWwindow* window = glfwCreateWindow(screen->width, screen->height, "Fluid", nullptr, nullptr);
     globalVariables::screenHeight = screen->height;
     globalVariables::screenWidth = screen->width;
     glfwMakeContextCurrent(window);
@@ -49,7 +49,7 @@ int main()
 
         ProcessInfo proc_info;
 
-        //Physics meneger;
+        // Physics meneger;
         PhysicsDod meneger;
 
         int nrDeCercuri = 0; bool show_graph_cpu = false, show_graph_ram = false;

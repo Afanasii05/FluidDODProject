@@ -4,10 +4,10 @@
 #include <algorithm>
 #include <cmath>
 #include "ourMath.h"
-#include "Circle.h"
 #include "globalVariables.h"
 #include "imgui.h"
 using namespace ourMath;
+
 class PhysicsDod
 {
 	std::vector<std::vector<int>> grid;
@@ -33,8 +33,23 @@ public:
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vector2f), (void*)0);  
 		glEnableVertexAttribArray(0);
 		glBindVertexArray(0);
-		
 	}
+
+	~PhysicsDod() {
+		glDeleteBuffers(1, &Vbo);
+		glDeleteVertexArrays(1, &Vao);
+	}
+
+
+	void render(Shader& sh) {
+		sh.use();
+		glBindVertexArray(Vao);
+		glBindBuffer(GL_ARRAY_BUFFER, Vbo);
+		glBufferData(GL_ARRAY_BUFFER, posC.size() * sizeof(Vector2f), posC.data(), GL_STREAM_DRAW);
+		glDrawArrays(GL_POINTS, 0, (GLsizei)posC.size());
+		glBindVertexArray(0);
+	}
+
 	int cellIndex(Vector2f position) {
 		int x = std::clamp(int(position.x / cellSize), 0, cols - 1);
 		int y = std::clamp(int(position.y / cellSize), 0, rows - 1);
@@ -51,7 +66,7 @@ public:
 	}
 
 	void checkBetweenCells(std::vector<int>& cell, int x, int y) {
-		if (x < 0 || x >= cols || y >= rows)
+		if (x < 0 || y < 0 || x >= cols || y >= rows)
 			return;
 		std::vector<int>& neighbor = grid[x + cols * y];
 
@@ -126,12 +141,12 @@ public:
 		updateCollidedCircles();
 		for (int i = 0;i < posC.size();i++) {
 			if (posC[i].x - globalVariables::circleRadius <= 0 || posC[i].x + globalVariables::circleRadius >= globalVariables::screenWidth) {
-				speedC[i]=speedC[i] * Vector2f(-1, 1);
+				speedC[i] = speedC[i] * Vector2f(-1, 1);
 			}
 			if (posC[i].y - globalVariables::circleRadius <= 0 || posC[i].y + globalVariables::circleRadius >= globalVariables::screenHeight) {
 				speedC[i] = speedC[i] * Vector2f(1, -1);
 			}
-			posC[i] = posC[i] + speedC[i];
+			posC[i] = posC[i] + speedC[i] * ImGui::GetIO().DeltaTime;
 			
 		}
 	}
@@ -139,7 +154,7 @@ public:
 		if (number > posC.size()) {
 			while (posC.size() < number) {
 				posC.push_back({ ourMath::randomFloat(200, 1700), ourMath::randomFloat(200, 800) });
-				speedC.push_back({ ourMath::randomFloat(-2, 2), ourMath::randomFloat(-2, 2) });
+				speedC.push_back({ ourMath::randomFloat(-20, 20), ourMath::randomFloat(-20, 20) });
 			}
 		}
 		else {
@@ -149,19 +164,6 @@ public:
 			}
 		}
 
-	}
-
-	void render(Shader& sh) {
-		sh.use();
-		glBindVertexArray(Vao);
-		glBindBuffer(GL_ARRAY_BUFFER, Vbo);
-		glBufferData(GL_ARRAY_BUFFER, posC.size() * sizeof(Vector2f), posC.data(), GL_STREAM_DRAW);
-		glDrawArrays(GL_POINTS, 0, (GLsizei)posC.size());                                            
-		glBindVertexArray(0);
-	}
-	~PhysicsDod() {
-		glDeleteBuffers(1, &Vbo);
-		glDeleteVertexArrays(1, &Vao);
 	}
 };
 

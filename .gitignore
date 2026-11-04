@@ -6,10 +6,12 @@ Release/
 *.user
 *.suo
 
-# ImGui
+# ImGui temporary settings
 imgui.ini
 
-#BuildFile pe Linux
+#CMake files (CLI + CLion)
 build/
+cmake-build-debug/
+cmake-build-release/
 
 .idea

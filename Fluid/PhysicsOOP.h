@@ -92,44 +92,32 @@ public:
 	}
 
 	void resolveColision(movableShape& s1, movableShape& s2) {
-	    //Verific initial daca colizioneaza
-	    Vector2f p1 = s1.getPosition();
-	    Vector2f p2 = s2.getPosition();
+	    Vector2f p1 = s1.getPosition(), p2 = s2.getPosition();
+	    float dirX = p2.x - p1.x, dirY = p2.y - p1.y;
+	    float dist_sqr = dirX * dirX + dirY * dirY;
 
-	    float dirX = p2.x - p1.x;
-	    float dirY = p2.y - p1.y;
-	    float dist2 = dirX * dirX + dirY * dirY;
-	    float minDist = 2.0f * globalVariables::circleRadius;
+		// verifica daca cele doua cercuri sunt in coliziune
+	    if (dist_sqr >= squaredAddedCirclesRadius) { return; }
 
-	    if (dist2 >= minDist * minDist)
-	        return;
-
-	    //Daca colizionez, cat le mut ca sa nu mai colizioneze
-	    float dist = std::sqrt(dist2);
+	    // distanta necesara a.i. sa nu mai colizioneze
+	    float dist = std::sqrt(dist_sqr);
 	    float nx = 1.0f, ny = 0.0f;
-	    if (dist > 0.0001f) {
-	        //calculez normala directiei ca sa stiu in ce directie scot bilele
-	        nx = dirX / dist;
-	        ny = dirY / dist;
-	    }
+
+	    // normala directiei daca se poate calcula
+	    if (dist > 0.0001f) { nx = dirX / dist; ny = dirY / dist; }
+
 	    //le pozitionez pe media overlapului ca sa nu mai fie una in alta.
-	    float overlap = minDist - dist;
-	    s1.setPosition(Vector2f(p1.x - nx * overlap /2.0f, p1.y - ny * overlap /2.0f));
-	    s2.setPosition(Vector2f(p2.x + nx * overlap /2.0f, p2.y + ny * overlap /2.0f));
+	    float overlap = cellSize - dist;
+	    s1.setPosition(Vector2f(p1.x - nx * overlap / 2.0f, p1.y - ny * overlap / 2.0f));
+	    s2.setPosition(Vector2f(p2.x + nx * overlap / 2.0f, p2.y + ny * overlap / 2.0f));
 
-	    //cat modific viteza dupa ciocnire in functie de normala ciocnirii.
-	    Vector2f v1 = s1.getSpeed();
-	    Vector2f v2 = s2.getSpeed();
-
-	    //puterea de apropiere una spre alta
+	    // puterea de apropiere una spre alta
+	    Vector2f v1 = s1.getSpeed(), v2 = s2.getSpeed();
 	    float relVel = (v2.x - v1.x) * nx + (v2.y - v1.y) * ny;
-	    if (relVel > 0)
-	        return;
+	    if (relVel > 0) { return; }
 
-	    //o valoare de elasticitate pentru o coliziune care pierde putin din energie
-	    float elastic = 0.99f;
-	    float power = -(1.0f + elastic) * relVel / 2.0f;
-	    //aplic impulsul in sensul opus
+		// aplic impulsul in sensul opus
+	    float power = -1.99f * relVel / 2.0f;
 	    s1.setSpeed(Vector2f(v1.x - power * nx, v1.y - power * ny));
 	    s2.setSpeed(Vector2f(v2.x + power * nx, v2.y + power * ny));
 	}

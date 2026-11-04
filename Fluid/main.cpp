@@ -14,6 +14,13 @@
 
 enum PhysicsType { OOP, DOD };
 
+static PhysicsOOP* manager_oop; static PhysicsDOD* manager_dod;
+static int nrDeCercuri, cur_physics_engine, last_physics_engine;
+static bool show_graph_cpu, show_graph_ram;
+
+static void display_debugWindow(ProcessInfo& proc_info);
+static void display_settingsWindow();
+
 int main()
 {
     // Fereastra fullscreen
@@ -49,9 +56,9 @@ int main()
 
         ProcessInfo proc_info;
 
-        PhysicsOOP* manager_oop = nullptr; PhysicsDOD* manager_dod = new PhysicsDOD();
-        int nrDeCercuri = 0, cur_physics_engine = DOD; bool show_graph_cpu = false, show_graph_ram = false;
-        int last_physics_engine = cur_physics_engine;
+        manager_oop = nullptr; manager_dod = new PhysicsDOD();
+        nrDeCercuri = 0; cur_physics_engine = DOD; last_physics_engine = cur_physics_engine;
+        show_graph_cpu = false; show_graph_ram = false;
 
         // Game loop
         while (!glfwWindowShouldClose(window))
@@ -63,84 +70,9 @@ int main()
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
-            ImGui::Begin("Generare cercuri");
 
-            static int nr_cpu = 90, offset_cpu = 0;
-            static float cpu_times[90] = {}, refresh_cpu = 0.0f, last_cpu = 0.0f;
-
-            refresh_cpu += ImGui::GetIO().DeltaTime;
-            if (refresh_cpu >= 0.1f) {
-                float curr_cpu = proc_info.GetCpuUsage(); if (curr_cpu >= 0.0f) { last_cpu = curr_cpu; }
-                refresh_cpu = 0.0f;
-                cpu_times[offset_cpu] = last_cpu;
-                offset_cpu = (offset_cpu + 1) % nr_cpu;
-            }
-
-            ImGui::Text("CPU Usage: %.2f %%", last_cpu);
-            ImGui::Checkbox("Show CPU Graph?", &show_graph_cpu);
-
-            if (show_graph_cpu) {
-                ImGui::PlotLines(
-                "##CPU", cpu_times, nr_cpu, offset_cpu, nullptr, 0.0f, 100.0f, Vector2f(0, 80.0f)
-                );
-            }
-
-            ImGui::Separator();
-
-            static int nr_ram = 90, offset_ram = 0;
-            static float ram_usages[90] = {}, refresh_ram = 0.0f, last_ram = 0.0f;
-
-            refresh_ram += ImGui::GetIO().DeltaTime;
-            if (refresh_ram >= 0.1f) {
-                float curr_ram = proc_info.GetMemoryUsage() / 1048576.0f;
-                if (curr_ram >= 0.0f) { last_ram = curr_ram; }
-
-                refresh_ram = 0.0f;
-                ram_usages[offset_ram] = last_ram - 100.0f;
-                offset_ram = (offset_ram + 1) % nr_ram;
-            }
-
-            ImGui::Text("RAM Usage: %.2f MB", last_ram);
-            ImGui::Checkbox("Show RAM Graph?", &show_graph_ram);
-
-            if (show_graph_ram) {
-                ImGui::PlotLines(
-                "##RAM", ram_usages, nr_ram, offset_ram, nullptr, 0.0f, 100.0f, Vector2f(0, 80.0f)
-                );
-            }
-
-            ImGui::Separator();
-
-            ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
-
-
-            if (ImGui::SliderInt("Nr de cercuri", &nrDeCercuri, 0, 200000)) {
-                if (cur_physics_engine == DOD) { manager_dod->changeNumberOfCircles(nrDeCercuri); }
-                else if (manager_oop != nullptr) { manager_oop->changeNumberOfCircles(nrDeCercuri); }
-            }
-
-            ImGui::SliderFloat("Speed multiplier", &globalVariables::speedMultiplier, 0.1f, 10.0f);
-
-            ImGui::Separator();
-
-            ImGui::Text("Select Physics type:");
-
-            ImGui::RadioButton("OOP", &cur_physics_engine, OOP);
-            ImGui::SameLine();
-            ImGui::RadioButton("DOD", &cur_physics_engine, DOD);
-
-            if (cur_physics_engine != last_physics_engine) {
-                if (cur_physics_engine == OOP) {
-                    manager_oop = new PhysicsOOP(*manager_dod);
-                    delete manager_dod; manager_dod = nullptr;
-                } else if (cur_physics_engine == DOD) {
-                    manager_dod = new PhysicsDOD(*manager_oop);
-                    delete manager_oop; manager_oop = nullptr;
-                }
-                last_physics_engine = cur_physics_engine;
-            }
-
-            ImGui::End();
+            display_settingsWindow(); // settings for app
+            display_debugWindow(proc_info); // debug options
 
             if (cur_physics_engine == DOD && manager_dod != nullptr) { manager_dod->update();
             } else if (manager_oop != nullptr) { manager_oop->update(); }
@@ -157,10 +89,121 @@ int main()
 
     }
 
+    delete manager_dod; delete manager_oop;
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
     glfwTerminate();
 
     return 0;
+}
+
+
+
+static void display_debugWindow(ProcessInfo& proc_info) {
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImVec2 debugWindowSize(300, 150);
+
+    ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x + viewport->WorkSize.x - debugWindowSize.x - 10, viewport->WorkPos.y + 10), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(debugWindowSize, ImGuiCond_FirstUseEver);
+
+    ImGui::Begin("Debug");
+
+    // FPS Counter
+    ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+
+    ImGui::Separator();
+
+    // CPU Usage
+    static int nr_cpu = 90, offset_cpu = 0;
+    static float cpu_times[90] = {}, refresh_cpu = 0.0f, last_cpu = 0.0f;
+
+    refresh_cpu += ImGui::GetIO().DeltaTime;
+    if (refresh_cpu >= 0.1f) {
+        float curr_cpu = proc_info.GetCpuUsage(); if (curr_cpu >= 0.0f) { last_cpu = curr_cpu; }
+        refresh_cpu = 0.0f;
+        cpu_times[offset_cpu] = last_cpu;
+        offset_cpu = (offset_cpu + 1) % nr_cpu;
+    }
+
+    ImGui::Text("CPU Usage: %.2f %%", last_cpu);
+    ImGui::SameLine();
+    ImGui::Checkbox("Show CPU Graph?", &show_graph_cpu);
+
+    if (show_graph_cpu) {
+        ImGui::PlotLines(
+        "##CPU", cpu_times, nr_cpu, offset_cpu, nullptr, 0.0f, 100.0f, Vector2f(0, 80.0f)
+        );
+    }
+
+    ImGui::Separator();
+
+
+    // RAM Usage
+    static int nr_ram = 90, offset_ram = 0;
+    static float ram_usages[90] = {}, refresh_ram = 0.0f, last_ram = 0.0f;
+
+    refresh_ram += ImGui::GetIO().DeltaTime;
+    if (refresh_ram >= 0.1f) {
+        float curr_ram = proc_info.GetMemoryUsage() / 1048576.0f;
+        if (curr_ram >= 0.0f) { last_ram = curr_ram; }
+
+        refresh_ram = 0.0f;
+        ram_usages[offset_ram] = last_ram - 100.0f;
+        offset_ram = (offset_ram + 1) % nr_ram;
+    }
+
+    ImGui::Text("RAM Usage: %.2f MB", last_ram);
+    ImGui::SameLine();
+    ImGui::Checkbox("Show RAM Graph?", &show_graph_ram);
+
+    if (show_graph_ram) {
+        ImGui::PlotLines(
+        "##RAM", ram_usages, nr_ram, offset_ram, nullptr, 0.0f, 100.0f, Vector2f(0, 80.0f)
+        );
+    }
+
+    ImGui::End();
+}
+
+static void display_settingsWindow() {
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x + 10, viewport->WorkPos.y + 10), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(350, 200), ImGuiCond_FirstUseEver);
+
+    ImGui::Begin("Settings");
+
+    ImGui::Text("Circle Generation");
+
+    // # of circles
+    if (ImGui::SliderInt("Nr. of Circles", &nrDeCercuri, 0, 200000)) {
+        if (cur_physics_engine == DOD) { manager_dod->changeNumberOfCircles(nrDeCercuri); }
+        else if (manager_oop != nullptr) { manager_oop->changeNumberOfCircles(nrDeCercuri); }
+    }
+
+    // spd. multiplier
+    ImGui::SliderFloat("Speed Multiplier", &globalVariables::speedMultiplier, 0.1f, 10.0f);
+
+    ImGui::Separator();
+
+    // physics type
+    ImGui::Text("Physics Type");
+
+    ImGui::RadioButton("OOP", &cur_physics_engine, OOP);
+    ImGui::SameLine();
+    ImGui::RadioButton("DOD", &cur_physics_engine, DOD);
+
+    if (cur_physics_engine != last_physics_engine) {
+        if (cur_physics_engine == OOP) {
+            manager_oop = new PhysicsOOP(*manager_dod);
+            delete manager_dod; manager_dod = nullptr;
+        } else if (cur_physics_engine == DOD) {
+            manager_dod = new PhysicsDOD(*manager_oop);
+            delete manager_oop; manager_oop = nullptr;
+        }
+        last_physics_engine = cur_physics_engine;
+    }
+
+    ImGui::End();
 }

@@ -40,7 +40,7 @@ public:
     void setCellSize(float cell_size) { cellSize = cell_size; }
     void setCols(int cls) { this->cols = cls; }
     void setRows(int rws) { this->rows = rws; }
-    void setSquaredRadius(int sqr_rad) { squaredAddedCirclesRadius = sqr_rad; }
+    void setSquaredRadius(float sqr_rad) { squaredAddedCirclesRadius = sqr_rad; }
     void setVAO(GLuint vao) { Vao = vao; }
     void setVBO(GLuint vbo) { Vbo = vbo; }
 
@@ -74,7 +74,7 @@ public:
     void updateCollidedCircles() {
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
-                std::vector<int>& cell = grid[x + cols * y];
+                const std::vector<int>& cell = grid[x + cols * y];
                 if (cell.empty()) continue;
 
                 for (int k = 0; k < (int)cell.size(); k++)
@@ -89,43 +89,33 @@ public:
         }
     }
 
-    void resolveColision(const int indexC1, const int indexC2) {
-        //Verific initial daca colizioneaza
-        Vector2f p1 = posC[indexC1];
-        Vector2f p2 = posC[indexC2];
+    void resolveColision(const int idx_c1, const int idx_c2) {
+        Vector2f p1 = posC[idx_c1], p2 = posC[idx_c2];
+        float dirX = p2.x - p1.x, dirY = p2.y - p1.y;
+        float dist_sqr = dirX * dirX + dirY * dirY;
 
-        float dirX = p2.x - p1.x;
-        float dirY = p2.y - p1.y;
-        float dist2 = dirX * dirX + dirY * dirY;
-        float minDist = 2.0f * globalVariables::circleRadius;
+        // verifica daca cele doua cercuri sunt in coliziune
+        if (dist_sqr >= squaredAddedCirclesRadius) { return; }
 
-        if (dist2 >= minDist * minDist)
-            return;
-
-        //Daca colizionez, cat le mut ca sa nu mai colizioneze
-        float dist = std::sqrt(dist2);
+        // distanta necesara a.i. sa nu mai colizioneze
+        float dist = std::sqrt(dist_sqr);
         float nx = 1.0f, ny = 0.0f;
-        if (dist > 0.0001f) {
-            //calculez normala directiei ca sa stiu in ce directie scot bilele
-            nx = dirX / dist;
-            ny = dirY / dist;
-        }
-        //le pozitionez pe media overlapului ca sa nu mai fie una in alta.
-        float overlap = minDist - dist;
-        posC[indexC1] = Vector2f(p1.x - nx * overlap / 2.0f, p1.y - ny * overlap / 2.0f);
-        posC[indexC2] = Vector2f(p2.x + nx * overlap / 2.0f, p2.y + ny * overlap / 2.0f);
 
-        //cat modific viteza dupa ciocnire in functie de normala ciocnirii.
+        // normala directiei daca se poate calcula
+        if (dist > 0.0001f) { nx = dirX / dist; ny = dirY / dist; }
 
-        //puterea de apropiere una spre alta
-        float relVel = (speedC[indexC2].x - speedC[indexC1].x) * nx + (speedC[indexC2].y - speedC[indexC1].y) * ny;
-        if (relVel > 0)
-            return;
+        // mutam cat jumate din overlap fiindca ambele cercuri se misca odata
+        float overlap = cellSize - dist;
+        posC[idx_c1] = Vector2f(p1.x - nx * overlap / 2.0f, p1.y - ny * overlap / 2.0f);
+        posC[idx_c2] = Vector2f(p2.x + nx * overlap / 2.0f, p2.y + ny * overlap / 2.0f);
 
-        float elastic = 0.99f;
-        float power = -(1.0f + elastic) * relVel / 2.0f;
-        //aplic impulsul in sensul opus
-        speedC[indexC1] = Vector2f(speedC[indexC1].x - power * nx, speedC[indexC1].y - power * ny);
-        speedC[indexC2] = Vector2f(speedC[indexC2].x + power * nx, speedC[indexC2].y + power * ny);
+        // puterea de apropiere una spre alta
+        float relVel = (speedC[idx_c2].x - speedC[idx_c1].x) * nx + (speedC[idx_c2].y - speedC[idx_c1].y) * ny;
+        if (relVel > 0) { return; }
+
+        // aplic impulsul in sensul opus
+        float power = -1.99f * relVel / 2.0f;
+        speedC[idx_c1] = Vector2f(speedC[idx_c1].x - power * nx, speedC[idx_c1].y - power * ny);
+        speedC[idx_c2] = Vector2f(speedC[idx_c2].x + power * nx, speedC[idx_c2].y + power * ny);
     }
 };

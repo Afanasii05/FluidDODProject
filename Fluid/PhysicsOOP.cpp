@@ -10,11 +10,19 @@ PhysicsOOP::PhysicsOOP() { //setez ca marimea unui grid sa fie cat diametrul une
 
     //Generare de buffere pentru rendare
     glGenVertexArrays(1, &Vao);
-    glGenBuffers(1, &Vbo);
+    glGenBuffers(1, &VboPos);
+    glGenBuffers(1, &VboSpd);
+
     glBindVertexArray(Vao);
-    glBindBuffer(GL_ARRAY_BUFFER, Vbo);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VboPos);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vector2f), (void*)0);
     glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VboSpd);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vector2f), (void*)0);
+    glEnableVertexAttribArray(1);
+
     glBindVertexArray(0);
 }
 
@@ -39,11 +47,19 @@ PhysicsOOP::PhysicsOOP(const PhysicsDOD& dod) {
 
     //Generare de buffere pentru rendare
     glGenVertexArrays(1, &Vao);
-    glGenBuffers(1, &Vbo);
+    glGenBuffers(1, &VboPos);
+    glGenBuffers(1, &VboSpd);
+
     glBindVertexArray(Vao);
-    glBindBuffer(GL_ARRAY_BUFFER, Vbo);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VboPos);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vector2f), (void*)0);
     glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VboSpd);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vector2f), (void*)0);
+    glEnableVertexAttribArray(1);
+
     glBindVertexArray(0);
 }
 
@@ -51,7 +67,8 @@ PhysicsOOP::~PhysicsOOP() {
     for (movableShape* shape : shapes)
         delete shape;
 
-    glDeleteBuffers(1, &Vbo);
+    glDeleteBuffers(1, &VboPos);
+    glDeleteBuffers(1, &VboSpd);
     glDeleteVertexArrays(1, &Vao);
 }
 
@@ -59,10 +76,17 @@ void PhysicsOOP::render(Shader& sh) {
     std::vector<Vector2f> positions; positions.reserve(shapes.size());
     std::transform(shapes.begin(), shapes.end(), std::back_inserter(positions), [](movableShape* shape){ return shape->getPosition(); });
 
-    sh.use();
+    std::vector<Vector2f> speeds; speeds.reserve(shapes.size());
+    std::transform(shapes.begin(), shapes.end(), std::back_inserter(speeds), [](movableShape* shape){ return shape->getSpeed(); });
+
     glBindVertexArray(Vao);
-    glBindBuffer(GL_ARRAY_BUFFER, Vbo);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VboPos);
     glBufferData(GL_ARRAY_BUFFER, shapes.size() * sizeof(Vector2f), positions.data(), GL_STREAM_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VboSpd);
+    glBufferData(GL_ARRAY_BUFFER, shapes.size() * sizeof(Vector2f), speeds.data(), GL_STREAM_DRAW);
+
     glDrawArrays(GL_POINTS, 0, (GLsizei)shapes.size());
     glBindVertexArray(0);
 }

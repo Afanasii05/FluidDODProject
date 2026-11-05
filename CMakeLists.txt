@@ -40,5 +40,15 @@ find_package(glfw3 REQUIRED)
 target_link_libraries(Fluid PRIVATE glfw OpenGL::GL dl pthread sys_core)
 
 # get shaders so opengl runs
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Fluid/shader.vs DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Fluid/shader.fs DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+add_custom_command(TARGET Fluid POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/Fluid/shader.vs"
+        "${CMAKE_CURRENT_BINARY_DIR}/shader.vs"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/Fluid/shader.fs"
+        "${CMAKE_CURRENT_BINARY_DIR}/shader.fs"
+        VERBATIM
+)
+
+#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Fluid/shader.vs DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Fluid/shader.fs DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

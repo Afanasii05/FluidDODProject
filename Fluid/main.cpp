@@ -174,19 +174,6 @@ static void display_settingsWindow() {
 
     ImGui::Begin("Settings");
 
-    ImGui::Text("Circle Generation");
-
-    // # of circles
-    if (ImGui::SliderInt("Nr. of Circles", &nrDeCercuri, 0, 200000)) {
-        if (cur_physics_engine == DOD) { manager_dod->changeNumberOfCircles(nrDeCercuri); }
-        else if (manager_oop != nullptr) { manager_oop->changeNumberOfCircles(nrDeCercuri); }
-    }
-
-    // spd. multiplier
-    ImGui::SliderFloat("Speed Multiplier", &globalVariables::speedMultiplier, 0.1f, 10.0f);
-
-    ImGui::Separator();
-
     // physics type
     ImGui::Text("Physics Type");
 
@@ -204,6 +191,19 @@ static void display_settingsWindow() {
         }
         last_physics_engine = cur_physics_engine;
     }
+
+    ImGui::Separator();
+
+    ImGui::Text("Circle Generation");
+
+    // # of circles
+    if (ImGui::SliderInt("Nr. of Circles", &nrDeCercuri, 0, 200000)) {
+        if (cur_physics_engine == DOD) { manager_dod->changeNumberOfCircles(nrDeCercuri); }
+        else if (manager_oop != nullptr) { manager_oop->changeNumberOfCircles(nrDeCercuri); }
+    }
+
+    // spd. multiplier
+    ImGui::SliderFloat("Speed Multiplier", &globalVariables::speedMultiplier, 0.1f, 10.0f);
 
     ImGui::End();
 }

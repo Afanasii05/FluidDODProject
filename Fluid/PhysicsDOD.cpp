@@ -10,12 +10,26 @@ PhysicsDOD::PhysicsDOD() {
 
     //Generare de buffere pentru rendare
     glGenVertexArrays(1, &Vao);
-    glGenBuffers(1, &Vbo);
+    glGenBuffers(1, &VboPos);
+    glGenBuffers(1, &VboSpd);
+
     glBindVertexArray(Vao);
-    glBindBuffer(GL_ARRAY_BUFFER, Vbo);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VboPos);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vector2f), (void*)0);
     glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VboSpd);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vector2f), (void*)0);
+    glEnableVertexAttribArray(1);
+
     glBindVertexArray(0);
+}
+
+PhysicsDOD::~PhysicsDOD() {
+    glDeleteBuffers(1, &VboSpd);
+    glDeleteBuffers(1, &VboPos);
+    glDeleteVertexArrays(1, &Vao);
 }
 
 PhysicsDOD::PhysicsDOD(const PhysicsOOP& oop) {
@@ -34,24 +48,32 @@ PhysicsDOD::PhysicsDOD(const PhysicsOOP& oop) {
 
     //Generare de buffere pentru rendare
     glGenVertexArrays(1, &Vao);
-    glGenBuffers(1, &Vbo);
+    glGenBuffers(1, &VboPos);
+    glGenBuffers(1, &VboSpd);
+
     glBindVertexArray(Vao);
-    glBindBuffer(GL_ARRAY_BUFFER, Vbo);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VboPos);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vector2f), (void*)0);
     glEnableVertexAttribArray(0);
-    glBindVertexArray(0);
-}
 
-PhysicsDOD::~PhysicsDOD() {
-    glDeleteBuffers(1, &Vbo);
-    glDeleteVertexArrays(1, &Vao);
+    glBindBuffer(GL_ARRAY_BUFFER, VboSpd);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vector2f), (void*)0);
+    glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
 }
 
 void PhysicsDOD::render(Shader& sh) {
     sh.use();
     glBindVertexArray(Vao);
-    glBindBuffer(GL_ARRAY_BUFFER, Vbo);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VboPos);
     glBufferData(GL_ARRAY_BUFFER, posC.size() * sizeof(Vector2f), posC.data(), GL_STREAM_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VboSpd);
+    glBufferData(GL_ARRAY_BUFFER, speedC.size() * sizeof(Vector2f), speedC.data(), GL_STREAM_DRAW);
+
     glDrawArrays(GL_POINTS, 0, (GLsizei)posC.size());
     glBindVertexArray(0);
 }

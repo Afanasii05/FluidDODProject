@@ -17,7 +17,7 @@ class PhysicsOOP
 	std::vector<movableShape*> shapes;
 	float cellSize, squaredAddedCirclesRadius;
 	int cols, rows;
-	GLuint Vao, Vbo;
+	GLuint Vao, VboPos, VboSpd;
 
 public:
 	PhysicsOOP();
@@ -34,7 +34,8 @@ public:
 	[[nodiscard]] int getRows() const { return rows; }
 	[[nodiscard]] float getSquaredRadius() const { return squaredAddedCirclesRadius; }
 	[[nodiscard]] GLuint getVAO() const { return Vao; }
-	[[nodiscard]] GLuint getVBO() const { return Vbo; }
+	[[nodiscard]] GLuint getVBOPos() const { return VboPos; }
+	[[nodiscard]] GLuint getVBOSpd() const { return VboSpd; }
 
 	void setGrid(const std::vector<std::vector<int>>& grd) { this->grid = grd; }
 	void setShapes(const std::vector<movableShape*>& sh) { this->shapes = sh; }
@@ -43,7 +44,8 @@ public:
 	void setRows(int rws) { this->rows = rws; }
 	void setSquaredRadius(float sqr_rad) { squaredAddedCirclesRadius = sqr_rad; }
 	void setVAO(GLuint vao) { Vao = vao; }
-	void setVBO(GLuint vbo) { Vbo = vbo; }
+	void setVBOPos(GLuint vbo) { VboPos = vbo; }
+	void setVBOSpd(GLuint vbo) { VboSpd = vbo; }
 
 
 

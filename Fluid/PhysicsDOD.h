@@ -17,7 +17,7 @@ class PhysicsDOD
     std::vector<Vector2f> speedC;
     float cellSize, squaredAddedCirclesRadius;
     int cols, rows;
-    GLuint Vao, Vbo;
+    GLuint Vao, VboPos, VboSpd;
 
 public:
     PhysicsDOD();
@@ -32,7 +32,8 @@ public:
     [[nodiscard]] int getRows() const { return rows; }
     [[nodiscard]] float getSquaredRadius() const { return squaredAddedCirclesRadius; }
     [[nodiscard]] GLuint getVAO() const { return Vao; }
-    [[nodiscard]] GLuint getVBO() const { return Vbo; }
+    [[nodiscard]] GLuint getVBOPos() const { return VboPos; }
+    [[nodiscard]] GLuint getVBOSpd() const { return VboSpd; }
 
     void setGrid(const std::vector<std::vector<int>>& grd) { this->grid = grd; }
     void setPositions(const std::vector<Vector2f>& pos) { this->posC = pos; }
@@ -42,7 +43,8 @@ public:
     void setRows(int rws) { this->rows = rws; }
     void setSquaredRadius(float sqr_rad) { squaredAddedCirclesRadius = sqr_rad; }
     void setVAO(GLuint vao) { Vao = vao; }
-    void setVBO(GLuint vbo) { Vbo = vbo; }
+    void setVBOPos(GLuint vbo) { VboPos = vbo; }
+    void setVBOSpd(GLuint vbo) { VboSpd = vbo; }
 
 
 

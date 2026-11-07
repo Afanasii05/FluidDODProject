@@ -9,6 +9,7 @@ protected:
 	Vector2f position;
 	Vector2f speed;
 	float maxSpeed = 3.0f;
+	bool dead = false; 
 
 public:
 	movableShape(Vector2f position, Vector2f speed = Vector2f(), Vector2f acceleration = Vector2f()) {
@@ -26,6 +27,9 @@ public:
 	void setAcceleration(const Vector2f& newAcceleration) { acceleration = newAcceleration; }
 	void setPosition(const Vector2f& pos) { this->position = pos; }
 	void setSpeed(const Vector2f& spd) { this->speed = spd; }
+
+	void kill() { dead = true; }
+	bool isDead() const { return dead; }
 
 	const Vector2f& getAcceleration() { return acceleration; }
 	const Vector2f& getPosition() { return position; }

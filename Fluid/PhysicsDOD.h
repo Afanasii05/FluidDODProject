@@ -15,6 +15,9 @@ class PhysicsDOD
     std::vector<std::vector<int>> grid;
     std::vector<Vector2f> posC;
     std::vector<Vector2f> speedC;
+    std::vector<char> dead;
+    int deadCount = 0;
+    float mergeDistSqr = -1.0f; // sub distanta asta (la patrat) bilele se contopesc; -1 = dezactivat
     float cellSize, squaredAddedCirclesRadius;
     int cols, rows;
     GLuint Vao, VboPos, VboSpd;
@@ -53,6 +56,7 @@ public:
     void update();
     void updateGrid();
     void changeNumberOfCircles(int number);
+    void removeDeadCircles();
 
 
 
@@ -98,6 +102,16 @@ public:
 
         // verifica daca cele doua cercuri sunt in coliziune
         if (dist_sqr >= squaredAddedCirclesRadius) { return; }
+
+        // o bila deja consumata in frame-ul asta nu mai participa
+        if (dead[idx_c1] || dead[idx_c2]) { return; }
+
+        // contopire: prima bila ramane si preia media vitezelor, a doua dispare
+        if (dist_sqr <= mergeDistSqr) {
+            speedC[idx_c1] = Vector2f((speedC[idx_c1].x + speedC[idx_c2].x) * 0.5f, (speedC[idx_c1].y + speedC[idx_c2].y) * 0.5f);
+            dead[idx_c2] = 1; deadCount++;
+            return;
+        }
 
         // distanta necesara a.i. sa nu mai colizioneze
         float dist = std::sqrt(dist_sqr);

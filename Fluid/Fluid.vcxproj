@@ -84,8 +84,8 @@
     <ClCompile Include="..\vendor\imgui\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="movableShape.cpp" />
     <ClCompile Include="ourMath.cpp" />
-    <ClCompile Include="Physics.cpp" />
-    <ClCompile Include="PhysicsDod.cpp" />
+    <ClCompile Include="PhysicsOOP.cpp" />
+    <ClCompile Include="PhysicsDOD.cpp" />
     <ClCompile Include="..\vendor\sys_info\core\src\ProcessInfo.cpp" />
     <ClCompile Include="..\vendor\glad\src\glad.c" />
     <ClCompile Include="Shader.cpp" />
@@ -96,8 +96,8 @@
     <ClInclude Include="globalVariables.h" />
     <ClInclude Include="movableShape.h" />
     <ClInclude Include="ourMath.h" />
-    <ClInclude Include="Physics.h" />
-    <ClInclude Include="PhysicsDod.h" />
+    <ClInclude Include="PhysicsOOP.h" />
+    <ClInclude Include="PhysicsDOD.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="..\vendor\sys_info\core\include\ProcessInfo.h" />
     <ClInclude Include="..\vendor\sys_info\core\include\SystemInformation.h" />

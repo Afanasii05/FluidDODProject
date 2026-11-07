@@ -79,8 +79,15 @@ void PhysicsDOD::render(Shader& sh) {
 }
 
 void PhysicsDOD::update() {
+    dead.assign(posC.size(), 0); deadCount = 0;
+    if (globalVariables::mergeEnabled) {
+        float d = cellSize * (1.0f - globalVariables::mergeOverlap / 100.0f);
+        mergeDistSqr = d * d;
+    } else { mergeDistSqr = -1.0f; }
+
     updateGrid();
     updateCollidedCircles();
+    removeDeadCircles();
 
     float dtmult = ImGui::GetIO().DeltaTime * globalVariables::speedMultiplier, radius = globalVariables::circleRadius;
     float max_x = globalVariables::screenWidth - radius, max_y = globalVariables::screenHeight - radius;
@@ -103,6 +110,20 @@ void PhysicsDOD::update() {
 }
 
 
+
+void PhysicsDOD::removeDeadCircles() {
+    if (deadCount == 0) return;
+
+    int j = 0;
+    for (int i = 0; i < posC.size(); i++) {
+        if (dead[i]) continue;
+        posC[j] = posC[i];
+        speedC[j] = speedC[i];
+        j++;
+    }
+    posC.resize(j);
+    speedC.resize(j);
+}
 
 void PhysicsDOD::updateGrid() {
     for (auto& gridCell : grid) {

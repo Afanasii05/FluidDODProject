@@ -16,6 +16,8 @@ class PhysicsOOP
 	std::vector<std::vector<int>> grid;
 	std::vector<movableShape*> shapes;
 	float cellSize, squaredAddedCirclesRadius;
+	float mergeDistSqr = -1.0f; 
+	int deadCount = 0;
 	int cols, rows;
 	GLuint Vao, VboPos, VboSpd;
 
@@ -55,6 +57,7 @@ public:
 	void render(Shader& sh);
 	void addCircle(Circle* cerc);
 	void changeNumberOfCircles(int number);
+	void removeDeadCircles();
 	void addCircles(std::vector<movableShape*> addedShapes);
 
 
@@ -101,7 +104,18 @@ public:
 		// verifica daca cele doua cercuri sunt in coliziune
 	    if (dist_sqr >= squaredAddedCirclesRadius) { return; }
 
-	    // distanta necesara a.i. sa nu mai colizioneze
+		// o bila deja consumata in frame-ul asta nu mai participa
+	    if (s1.isDead() || s2.isDead()) { return; }
+
+		// contopire: prima bila ramane si preia media vitezelor, a doua dispare 
+	    if (dist_sqr <= mergeDistSqr) {
+	        Vector2f a = s1.getSpeed(), b = s2.getSpeed();
+	        s1.setSpeed(Vector2f((a.x + b.x) * 0.5f, (a.y + b.y) * 0.5f));
+	        s2.kill(); deadCount++;
+	        return;
+	    }
+
+	    // distanta necesara sa nu mai colizioneze
 	    float dist = std::sqrt(dist_sqr);
 	    float nx = 1.0f, ny = 0.0f;
 

@@ -92,8 +92,16 @@ void PhysicsOOP::render(Shader& sh) {
 }
 
 void PhysicsOOP::update() {
+    // pregatire contopire
+    deadCount = 0;
+    if (globalVariables::mergeEnabled) {
+        float d = cellSize * (1.0f - globalVariables::mergeOverlap / 100.0f);
+        mergeDistSqr = d * d;
+    } else { mergeDistSqr = -1.0f; }
+
     updateGrid();
     updateCollidedCircles();
+    removeDeadCircles();
 
     float dtmult = ImGui::GetIO().DeltaTime * globalVariables::speedMultiplier, radius = globalVariables::circleRadius;
     float max_x = globalVariables::screenWidth - radius, max_y = globalVariables::screenHeight - radius;
@@ -117,6 +125,18 @@ void PhysicsOOP::update() {
         shape->setPosition(pos);
         shape->setSpeed(speed);
     }
+}
+
+// sterge obiectele consumate si compacteaza vectorul intr-o singura trecere
+void PhysicsOOP::removeDeadCircles() {
+    if (deadCount == 0) return;
+
+    int write = 0;
+    for (int read = 0; read < shapes.size(); read++) {
+        if (shapes[read]->isDead()) { delete shapes[read]; continue; }
+        shapes[write++] = shapes[read];
+    }
+    shapes.resize(write);
 }
 
 void PhysicsOOP::updateGrid() {

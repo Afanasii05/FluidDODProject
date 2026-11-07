@@ -77,6 +77,10 @@ int main()
             if (cur_physics_engine == DOD && manager_dod != nullptr) { manager_dod->update();
             } else if (manager_oop != nullptr) { manager_oop->update(); }
 
+            // sincronizeaza slider-ul cu numarul real de bile (scade cand se contopesc)
+            if (cur_physics_engine == DOD && manager_dod != nullptr) { nrDeCercuri = (int)manager_dod->getPositions().size(); }
+            else if (manager_oop != nullptr) { nrDeCercuri = (int)manager_oop->getShapes().size(); }
+
             ImGui::Render();
             glClear(GL_COLOR_BUFFER_BIT);
 
@@ -204,6 +208,15 @@ static void display_settingsWindow() {
 
     // spd. multiplier
     ImGui::SliderFloat("Speed Multiplier", &globalVariables::speedMultiplier, 0.1f, 10.0f);
+
+    ImGui::Separator();
+
+    // contopire
+    ImGui::Text("Merging");
+    ImGui::Checkbox("Merge circles", &globalVariables::mergeEnabled);
+    ImGui::BeginDisabled(!globalVariables::mergeEnabled);
+    ImGui::SliderFloat("Overlap to merge", &globalVariables::mergeOverlap, 0.0f, 100.0f, "%.0f%%");
+    ImGui::EndDisabled();
 
     ImGui::End();
 }

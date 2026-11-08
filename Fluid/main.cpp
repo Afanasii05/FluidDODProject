@@ -7,7 +7,7 @@
 #include "PhysicsOOP.h"
 #include "PhysicsDOD.h"
 #include "ourMath.h"
-#include "globalVariables.h"
+#include "global.h"
 #include "ProcessInfo.h"
 
 #include <iostream>
@@ -29,8 +29,8 @@ int main()
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* screen = glfwGetVideoMode(monitor);
     GLFWwindow* window = glfwCreateWindow(screen->width, screen->height, "Fluid", nullptr, nullptr);
-    globalVariables::screenHeight = screen->height;
-    globalVariables::screenWidth = screen->width;
+    global::screenHeight = screen->height;
+    global::screenWidth = screen->width;
     glfwMakeContextCurrent(window);
     glfwSwapInterval(0); // vsync
 
@@ -52,8 +52,8 @@ int main()
 
         Shader shader("shader.vs", "shader.fs");
         shader.use();
-        shader.setFloat("raza", globalVariables::circleRadius);
-        shader.setVec2("marimeEcran", globalVariables::screenWidth, globalVariables::screenHeight);
+        shader.setFloat("raza", global::circleRadius);
+        shader.setVec2("marimeEcran", global::screenWidth, global::screenHeight);
 
         ProcessInfo proc_info;
 
@@ -72,8 +72,8 @@ int main()
             //Coordonate mouse
             double mX, mY;
             glfwGetCursorPos(window, &mX, &mY);
-            globalVariables::mouseX = (float)mX;
-            globalVariables::mouseY = (float)mY;
+            global::mouseX = (float)mX;
+            global::mouseY = (float)mY;
 
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
@@ -209,31 +209,31 @@ static void display_settingsWindow() {
     ImGui::Text("Circle Generation");
 
     // # of circles
-    if (ImGui::SliderInt("Nr. of Circles", &nrDeCercuri, 0, 200000)) {
+    if (ImGui::SliderInt("Nr. of Circles", &nrDeCercuri, 0, global::maxCircles)) {
         if (cur_physics_engine == DOD) { manager_dod->changeNumberOfCircles(nrDeCercuri); }
         else if (manager_oop != nullptr) { manager_oop->changeNumberOfCircles(nrDeCercuri); }
     }
 
     // spd. multiplier
-    ImGui::SliderFloat("Speed Multiplier", &globalVariables::speedMultiplier, 0.1f, 10.0f);
+    ImGui::SliderFloat("Speed Multiplier", &global::speedMultiplier, 0.1f, 10.0f);
 
     ImGui::Separator();
 
     // contopire
     ImGui::Text("Merging");
-    ImGui::Checkbox("Merge circles", &globalVariables::mergeEnabled);
-    ImGui::BeginDisabled(!globalVariables::mergeEnabled);
-    ImGui::SliderFloat("Overlap to merge", &globalVariables::mergeOverlap, 0.0f, 100.0f, "%.0f%%");
+    ImGui::Checkbox("Merge circles", &global::mergeEnabled);
+    ImGui::BeginDisabled(!global::mergeEnabled);
+    ImGui::SliderFloat("Overlap to merge", &global::mergeOverlap, 0.0f, 100.0f, "%.0f%%");
     ImGui::EndDisabled();
 
 
     //Cursor interaction
     ImGui::Separator();
     ImGui::Text("Cursor Interaction");
-    ImGui::Checkbox("Cursor Repel Aura", &globalVariables::cursorRepelEnabled);
-    ImGui::BeginDisabled(!globalVariables::cursorRepelEnabled);
-    ImGui::SliderFloat("Cursor Radius", &globalVariables::cursorRepelRadius, 20.0f, 300.0f, "%.0f px");
-    ImGui::SliderFloat("Repel Force", &globalVariables::repelForce, 1.0f, 100.0f, "%.1f");
+    ImGui::Checkbox("Cursor Repel Aura", &global::cursorRepelEnabled);
+    ImGui::BeginDisabled(!global::cursorRepelEnabled);
+    ImGui::SliderFloat("Cursor Radius", &global::cursorRepelRadius, 20.0f, 300.0f, "%.0f px");
+    ImGui::SliderFloat("Repel Force", &global::repelForce, 1.0f, 100.0f, "%.1f");
     ImGui::EndDisabled();
 
 

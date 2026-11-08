@@ -32,7 +32,7 @@
     <ClCompile Include="movableShape.cpp" />
     <ClCompile Include="ourMath.cpp" />
     <ClCompile Include="PhysicsOOP.cpp" />
-    <ClCompile Include="globalVariables.cpp" />
+    <ClCompile Include="global.cpp" />
     <ClCompile Include="PhysicsDOD.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -41,7 +41,7 @@
     <ClInclude Include="movableShape.h" />
     <ClInclude Include="ourMath.h" />
     <ClInclude Include="PhysicsOOP.h" />
-    <ClInclude Include="globalVariables.h" />
+    <ClInclude Include="global.h" />
     <ClInclude Include="PhysicsDOD.h" />
   </ItemGroup>
 </Project>

@@ -2,9 +2,9 @@
 #include "PhysicsOOP.h"
 
 PhysicsDOD::PhysicsDOD() {
-    cellSize = 2 * globalVariables::circleRadius;
-    rows = globalVariables::screenHeight / cellSize + 1;
-    cols = globalVariables::screenWidth / cellSize + 1;
+    cellSize = 2 * global::circleRadius;
+    rows = global::screenHeight / cellSize + 1;
+    cols = global::screenWidth / cellSize + 1;
     squaredAddedCirclesRadius = cellSize * cellSize;
     grid.assign(cols * rows, {});
 
@@ -33,9 +33,9 @@ PhysicsDOD::~PhysicsDOD() {
 }
 
 PhysicsDOD::PhysicsDOD(const PhysicsOOP& oop) {
-    cellSize = 2 * globalVariables::circleRadius;
-    rows = globalVariables::screenHeight / cellSize + 1;
-    cols = globalVariables::screenWidth / cellSize + 1;
+    cellSize = 2 * global::circleRadius;
+    rows = global::screenHeight / cellSize + 1;
+    cols = global::screenWidth / cellSize + 1;
     squaredAddedCirclesRadius = cellSize * cellSize;
 
     // copy between the two
@@ -80,8 +80,8 @@ void PhysicsDOD::render(Shader& sh) {
 
 void PhysicsDOD::update() {
     dead.assign(posC.size(), 0); deadCount = 0;
-    if (globalVariables::mergeEnabled) {
-        float d = cellSize * (1.0f - globalVariables::mergeOverlap / 100.0f);
+    if (global::mergeEnabled) {
+        float d = cellSize * (1.0f - global::mergeOverlap / 100.0f);
         mergeDistSqr = d * d;
     } else { mergeDistSqr = -1.0f; }
 
@@ -91,8 +91,8 @@ void PhysicsDOD::update() {
     removeDeadCircles();
 
     
-    float dtmult = ImGui::GetIO().DeltaTime * globalVariables::speedMultiplier, radius = globalVariables::circleRadius;
-    float max_x = globalVariables::screenWidth - radius, max_y = globalVariables::screenHeight - radius;
+    float dtmult = ImGui::GetIO().DeltaTime * global::speedMultiplier, radius = global::circleRadius;
+    float max_x = global::screenWidth - radius, max_y = global::screenHeight - radius;
 
     for (int i = 0;i < posC.size();i++) {
         if (posC[i].x <= radius) {
@@ -112,10 +112,10 @@ void PhysicsDOD::update() {
 }
 
 void PhysicsDOD::updateCursorRepulsion() {
-    if (!globalVariables::cursorRepelEnabled) return;
+    if (!global::cursorRepelEnabled) return;
 
-    Vector2f mousePos(globalVariables::mouseX, globalVariables::mouseY);
-    float repelRadius = globalVariables::cursorRepelRadius;
+    Vector2f mousePos(global::mouseX, global::mouseY);
+    float repelRadius = global::cursorRepelRadius;
     float repelRadiusSqr = repelRadius * repelRadius;
 
 
@@ -141,8 +141,8 @@ void PhysicsDOD::updateCursorRepulsion() {
                     float ny = dirY / dist;
 
                     float factor = (1.0f - (dist / repelRadius));
-                    speedC[idx].x += nx * factor * globalVariables::repelForce; //Puterea fortei
-                    speedC[idx].y += ny * factor * globalVariables::repelForce;
+                    speedC[idx].x += nx * factor * global::repelForce; //Puterea fortei
+                    speedC[idx].y += ny * factor * global::repelForce;
 
                 }
             }

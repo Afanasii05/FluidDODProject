@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include "ourMath.h"
-#include "globalVariables.h"
+#include "global.h"
 #include "Circle.h"
 #include "imgui.h"
 using namespace ourMath;

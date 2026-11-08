@@ -2,9 +2,9 @@
 #include "PhysicsDOD.h"
 
 PhysicsOOP::PhysicsOOP() { //setez ca marimea unui grid sa fie cat diametrul unei bile(bilele trebuie sa aibe toate aceeasi marime)
-    cellSize =  2 * globalVariables::circleRadius;
-    rows = globalVariables::screenHeight / cellSize + 1;
-    cols = globalVariables::screenWidth / cellSize + 1;
+    cellSize =  2 * global::circleRadius;
+    rows = global::screenHeight / cellSize + 1;
+    cols = global::screenWidth / cellSize + 1;
     squaredAddedCirclesRadius = cellSize * cellSize;
     grid.assign(rows *cols, {});
 
@@ -27,9 +27,9 @@ PhysicsOOP::PhysicsOOP() { //setez ca marimea unui grid sa fie cat diametrul une
 }
 
 PhysicsOOP::PhysicsOOP(const PhysicsDOD& dod) {
-    cellSize = 2 * globalVariables::circleRadius;
-    rows = globalVariables::screenHeight / cellSize + 1;
-    cols = globalVariables::screenWidth / cellSize + 1;
+    cellSize = 2 * global::circleRadius;
+    rows = global::screenHeight / cellSize + 1;
+    cols = global::screenWidth / cellSize + 1;
     squaredAddedCirclesRadius = cellSize * cellSize;
 
     // copy between the two
@@ -41,7 +41,7 @@ PhysicsOOP::PhysicsOOP(const PhysicsDOD& dod) {
         dod.getSpeeds().begin(),
         std::back_inserter(shapes),
         [](const Vector2f& pos, const Vector2f& spd) -> movableShape* {
-            return new Circle(pos, spd, {0, 0}, globalVariables::circleRadius);
+            return new Circle(pos, spd, {0, 0}, global::circleRadius);
         }
     );
 
@@ -92,10 +92,10 @@ void PhysicsOOP::render(Shader& sh) {
 }
 
 void PhysicsOOP::updateCursorRepulsion() {
-    if (!globalVariables::cursorRepelEnabled) return;
+    if (!global::cursorRepelEnabled) return;
 
-    Vector2f mousePos(globalVariables::mouseX, globalVariables::mouseY);
-    float repelRadius = globalVariables::cursorRepelRadius;
+    Vector2f mousePos(global::mouseX, global::mouseY);
+    float repelRadius = global::cursorRepelRadius;
     float repelRadiusSqr = repelRadius * repelRadius;
 
     int mouseCellX = std::clamp(int(mousePos.x / cellSize), 0, cols - 1);
@@ -124,8 +124,8 @@ void PhysicsOOP::updateCursorRepulsion() {
                     float factor = (1.0f - (dist / repelRadius));
                     
                     Vector2f currentSpeed = s->getSpeed();
-                    currentSpeed.x += nx * factor * globalVariables::repelForce;
-                    currentSpeed.y += ny * factor * globalVariables::repelForce;
+                    currentSpeed.x += nx * factor * global::repelForce;
+                    currentSpeed.y += ny * factor * global::repelForce;
                     s->setSpeed(currentSpeed);
 
                 }
@@ -137,8 +137,8 @@ void PhysicsOOP::updateCursorRepulsion() {
 void PhysicsOOP::update() {
     // pregatire contopire
     deadCount = 0;
-    if (globalVariables::mergeEnabled) {
-        float d = cellSize * (1.0f - globalVariables::mergeOverlap / 100.0f);
+    if (global::mergeEnabled) {
+        float d = cellSize * (1.0f - global::mergeOverlap / 100.0f);
         mergeDistSqr = d * d;
     } else { mergeDistSqr = -1.0f; }
 
@@ -147,8 +147,8 @@ void PhysicsOOP::update() {
     updateCursorRepulsion();
     removeDeadCircles();
 
-    float dtmult = ImGui::GetIO().DeltaTime * globalVariables::speedMultiplier, radius = globalVariables::circleRadius;
-    float max_x = globalVariables::screenWidth - radius, max_y = globalVariables::screenHeight - radius;
+    float dtmult = ImGui::GetIO().DeltaTime * global::speedMultiplier, radius = global::circleRadius;
+    float max_x = global::screenWidth - radius, max_y = global::screenHeight - radius;
 
     for (movableShape* shape : shapes) {
         Vector2f pos = shape->getPosition(), speed = shape->getSpeed();
@@ -212,7 +212,7 @@ void PhysicsOOP::changeNumberOfCircles(int number) {
                 { randomFloat(200,1700), randomFloat(200,800) },
                 { randomFloat(-20, 20), randomFloat(-20, 20) },
                 {0,0},
-                globalVariables::circleRadius
+                global::circleRadius
             ));
         }
     }

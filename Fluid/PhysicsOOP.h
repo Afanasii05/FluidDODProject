@@ -59,7 +59,7 @@ public:
 	void changeNumberOfCircles(int number);
 	void removeDeadCircles();
 	void addCircles(std::vector<movableShape*> addedShapes);
-
+	void updateCursorRepulsion();
 
 
 	// inline functions

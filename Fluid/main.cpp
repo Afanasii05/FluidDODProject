@@ -18,6 +18,7 @@ static PhysicsOOP* manager_oop; static PhysicsDOD* manager_dod;
 static int nrDeCercuri, cur_physics_engine, last_physics_engine;
 static bool show_graph_cpu, show_graph_ram;
 
+
 static void display_debugWindow(ProcessInfo& proc_info);
 static void display_settingsWindow();
 
@@ -66,6 +67,13 @@ int main()
             glfwPollEvents();
             if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
                 glfwSetWindowShouldClose(window, true);
+
+
+            //Coordonate mouse
+            double mX, mY;
+            glfwGetCursorPos(window, &mX, &mY);
+            globalVariables::mouseX = (float)mX;
+            globalVariables::mouseY = (float)mY;
 
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
@@ -217,6 +225,17 @@ static void display_settingsWindow() {
     ImGui::BeginDisabled(!globalVariables::mergeEnabled);
     ImGui::SliderFloat("Overlap to merge", &globalVariables::mergeOverlap, 0.0f, 100.0f, "%.0f%%");
     ImGui::EndDisabled();
+
+
+    //Cursor interaction
+    ImGui::Separator();
+    ImGui::Text("Cursor Interaction");
+    ImGui::Checkbox("Cursor Repel Aura", &globalVariables::cursorRepelEnabled);
+    ImGui::BeginDisabled(!globalVariables::cursorRepelEnabled);
+    ImGui::SliderFloat("Cursor Radius", &globalVariables::cursorRepelRadius, 20.0f, 300.0f, "%.0f px");
+    ImGui::SliderFloat("Repel Force", &globalVariables::repelForce, 1.0f, 100.0f, "%.1f");
+    ImGui::EndDisabled();
+
 
     ImGui::End();
 }

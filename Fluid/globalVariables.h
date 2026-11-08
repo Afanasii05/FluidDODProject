@@ -7,5 +7,11 @@ namespace globalVariables
 
 	inline bool mergeEnabled = false;
 	inline float mergeOverlap = 50.0f;
+
+	inline bool cursorRepelEnabled = false;
+    inline float cursorRepelRadius = 100.0f;
+	inline float repelForce = 10.0f;
+    inline float mouseX = 0.0f;
+    inline float mouseY = 0.0f;
 };
 

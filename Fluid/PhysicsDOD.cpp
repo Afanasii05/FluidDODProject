@@ -87,8 +87,10 @@ void PhysicsDOD::update() {
 
     updateGrid();
     updateCollidedCircles();
+    updateCursorRepulsion();
     removeDeadCircles();
 
+    
     float dtmult = ImGui::GetIO().DeltaTime * globalVariables::speedMultiplier, radius = globalVariables::circleRadius;
     float max_x = globalVariables::screenWidth - radius, max_y = globalVariables::screenHeight - radius;
 
@@ -109,7 +111,44 @@ void PhysicsDOD::update() {
     }
 }
 
+void PhysicsDOD::updateCursorRepulsion() {
+    if (!globalVariables::cursorRepelEnabled) return;
 
+    Vector2f mousePos(globalVariables::mouseX, globalVariables::mouseY);
+    float repelRadius = globalVariables::cursorRepelRadius;
+    float repelRadiusSqr = repelRadius * repelRadius;
+
+
+    int mouseCellX = std::clamp(int(mousePos.x / cellSize), 0, cols - 1);
+    int mouseCellY = std::clamp(int(mousePos.y / cellSize), 0, rows - 1);
+
+    // Range-ul de celule verificate
+    int range = std::max(1, (int)(repelRadius / cellSize));
+    
+    for (int y = std::max(0, mouseCellY - range); y <= std::min(rows - 1, mouseCellY + range); y++) {
+        for (int x = std::max(0, mouseCellX - range); x <= std::min(cols - 1, mouseCellX + range); x++) {
+            const std::vector<int>& cell = grid[x + cols * y];
+            for (int idx : cell) {
+
+                Vector2f p = posC[idx];
+                float dirX = p.x - mousePos.x;
+                float dirY = p.y - mousePos.y;
+                float distSqr = dirX * dirX + dirY * dirY;
+
+                if (distSqr < repelRadiusSqr && distSqr > 0.0001f) {
+                    float dist = std::sqrt(distSqr);
+                    float nx = dirX / dist;
+                    float ny = dirY / dist;
+
+                    float factor = (1.0f - (dist / repelRadius));
+                    speedC[idx].x += nx * factor * globalVariables::repelForce; //Puterea fortei
+                    speedC[idx].y += ny * factor * globalVariables::repelForce;
+
+                }
+            }
+        }
+    }
+}
 
 void PhysicsDOD::removeDeadCircles() {
     if (deadCount == 0) return;

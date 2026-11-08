@@ -57,6 +57,7 @@ public:
     void updateGrid();
     void changeNumberOfCircles(int number);
     void removeDeadCircles();
+    void updateCursorRepulsion();/////////////////////
 
 
 
